@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTOWN DATA NAME</title>
+    <link rel="icon" type="image/x-icon" href="CEEDO.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase SDK removed — replaced with Supabase REST API below -->
+
+    <style>
+        /* ─── CSS Variables & Reset ─────────────────────────── */
+        :root {
+            --primary-blue:#1e40af;--primary-blue-dark:#1e3a8a;--accent-blue:#3b82f6;
+            --gradient-primary:linear-gradient(135deg,#1e40af 0%,#3b82f6 100%);
+            --gradient-dark:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%);
+            --white:#ffffff;--light-blue:#f0f4ff;--neutral-100:#f8fafc;
+            --neutral-200:#e2e8f0;--text-dark:#1e293b;--text-gray:#64748b;
+            --text-light:#94a3b8;--shadow:0 4px 24px rgba(30,64,175,.10);
+            --shadow-hover:0 8px 40px rgba(30,64,175,.18);
+            --border-radius:20px;--transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{font-family:'Inter',sans-serif;background:var(--neutral-100);color:var(--text-dark);line-height:1.6;overflow-x:hidden}
+
+        /* ─── Navigation ─────────────────────────────────────── */
+        .nav-header{background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--neutral-200);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(30,64,175,.08)}
+        .nav-container{max-width:1400px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;gap:2rem;height:80px;flex-wrap:nowrap}
+        .nav-brand{display:flex;align-items:center;gap:0.75rem;min-width:0;flex:0 0 auto}
+        .nav-logos{display:flex;align-items:center;gap:0.5rem;flex-shrink:0}
+        .nav-logo{width:44px;height:44px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--light-blue);flex-shrink:0}
+        .nav-logo-img{width:100%;height:100%;object-fit:cover}
+        .nav-site-name{font-size:1.05rem;font-weight:800;background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+        .nav-menu{display:flex;list-style:none;gap:0.5rem;margin:0 auto}
+        .nav-menu a{color:var(--text-gray);text-decoration:none;padding:.5rem 1rem;border-radius:10px;font-weight:500;transition:var(--transition);white-space:nowrap;cursor:pointer}
+        .nav-menu a:hover,.nav-menu a.active{color:var(--primary-blue);background:var(--light-blue)}
+        .sign-in-btn{background:var(--gradient-primary);color:#fff;border:none;padding:.6rem 1.5rem;border-radius:12px;font-weight:600;font-size:.9rem;cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:.5rem;white-space:nowrap;flex-shrink:0}
+        .sign-in-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,64,175,.3)}
+        .user-dropdown{position:relative;flex-shrink:0}
+        .user-dropdown-btn{background:var(--light-blue);color:var(--primary-blue);border:1.5px solid var(--neutral-200);padding:.6rem 1.25rem;border-radius:12px;font-weight:600;font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:var(--transition)}
+        .user-dropdown-content{display:none;position:absolute;right:0;top:calc(100% + .5rem);background:#fff;border:1px solid var(--neutral-200);border-radius:16px;min-width:180px;box-shadow:var(--shadow);z-index:200;overflow:hidden}
+        .user-dropdown-content.show{display:block}
+        .dropdown-item{padding:.75rem 1.25rem;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:.6rem;transition:var(--transition);color:var(--text-dark)}
+        .dropdown-item:hover{background:var(--light-blue);color:var(--primary-blue)}
+        .dropdown-item.logout:hover{background:#fef2f2;color:#dc2626}
+        .mobile-menu-btn{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:.5rem}
+        .mobile-menu-btn span{width:22px;height:2px;background:var(--text-dark);border-radius:2px;transition:var(--transition)}
+        .mobile-menu{display:none;position:fixed;inset:0;background:#fff;z-index:999;padding:5rem 2rem 2rem;overflow-y:auto}
+        .mobile-menu.active{display:block}
+        .mobile-menu ul{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+        .mobile-menu a{display:block;padding:1rem;border-radius:12px;color:var(--text-dark);text-decoration:none;font-weight:500;font-size:1.05rem;transition:var(--transition);cursor:pointer}
+        .mobile-menu a:hover{background:var(--light-blue);color:var(--primary-blue)}
+        .mobile-sign-in{margin-top:1.5rem}
+        .hidden{display:none!important}
+
+        /* ─── Header ─────────────────────────────────────────── */
+        .header{background:var(--gradient-primary);padding:4rem 0 5rem;text-align:center;position:relative;overflow:hidden}
+        .header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+        .header-content{max-width:800px;margin:0 auto;padding:0 2rem;position:relative}
+        .header h1{font-size:2.5rem;font-weight:800;color:#fff;margin-bottom:1rem;line-height:1.2}
+        .header p{font-size:1.1rem;color:rgba(255,255,255,.85);margin-bottom:2rem;line-height:1.7}
+        .header-stats{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap}
+        .header-stat{text-align:center}
+        .header-stat-number{display:block;font-size:2rem;font-weight:800;color:#fff}
+        .header-stat-label{font-size:.9rem;color:rgba(255,255,255,.8);font-weight:500}
+
+        /* ─── Main Container ─────────────────────────────────── */
+        .container{max-width:1400px;margin:0 auto;padding:3rem 2rem}
+
+        /* ─── Section Title ──────────────────────────────────── */
+        .section-title{text-align:center;margin-bottom:2rem}
+        .section-title h2{font-size:2rem;font-weight:800;color:var(--text-dark);margin-bottom:.75rem}
+        .section-title p{color:var(--text-gray);max-width:600px;margin:0 auto;line-height:1.7}
+
+        /* ─── Filter ─────────────────────────────────────────── */
+        .filter-section{display:flex;justify-content:center;margin-bottom:2rem}
+        .filter-dropdown{position:relative}
+        .filter-btn{background:#fff;border:1.5px solid var(--neutral-200);padding:.75rem 1.5rem;border-radius:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.6rem;transition:var(--transition);font-size:.95rem;color:var(--text-dark)}
+        .filter-btn:hover{border-color:var(--accent-blue);color:var(--primary-blue)}
+        .filter-dropdown-content{display:none;position:absolute;top:calc(100% + .5rem);left:0;background:#fff;border:1px solid var(--neutral-200);border-radius:16px;min-width:200px;box-shadow:var(--shadow);z-index:100;overflow:hidden}
+        .filter-dropdown-content.show{display:block}
+        .filter-option{padding:.75rem 1.25rem;cursor:pointer;transition:var(--transition);font-weight:500}
+        .filter-option:hover,.active-filter{background:var(--light-blue);color:var(--primary-blue)}
+
+        /* ─── Schools Grid ───────────────────────────────────── */
+        .schools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2.5rem}
+        .school-card{background:#fff;border-radius:var(--border-radius);overflow:hidden;box-shadow:var(--shadow);transition:var(--transition);cursor:pointer}
+        .school-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-hover)}
+        .school-image{position:relative;height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+        .school-image-overlay{position:absolute;inset:0;background:rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;opacity:0;transition:var(--transition)}
+        .school-card:hover .school-image-overlay{opacity:1}
+        .school-icon{color:#fff;font-size:2rem;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+        .school-content{padding:1.75rem}
+        .school-content h3{font-size:1.1rem;font-weight:700;margin-bottom:.75rem;color:var(--text-dark);line-height:1.4}
+        .school-location{display:flex;align-items:flex-start;gap:.4rem;color:var(--text-light);font-size:.9rem;margin-bottom:.6rem}
+        .school-location i{color:var(--accent-blue);flex-shrink:0;margin-top:.15rem}
+        .school-description{font-size:.9rem;color:var(--text-gray);line-height:1.6;margin-top:.5rem}
+        .school-initials{width:100%;height:240px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;font-weight:800;color:rgba(255,255,255,.95);letter-spacing:-.02em;text-shadow:0 2px 8px rgba(0,0,0,.2);position:relative;padding:1rem;text-align:center;word-break:break-word}
+        .school-abbrev-badge{display:inline-block;background:var(--gradient-primary);color:#fff;font-size:.8rem;font-weight:700;padding:.25rem .75rem;border-radius:20px;margin-bottom:.75rem;letter-spacing:.05em;word-break:break-word;max-width:100%}
+        .schools-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:5rem 2rem;grid-column:1/-1;color:var(--text-gray)}
+        .schools-loading .loading-ring{width:56px;height:56px;border:4px solid var(--neutral-200);border-top-color:var(--accent-blue);border-radius:50%;animation:spin .9s linear infinite}
+        .schools-loading p{font-size:1.1rem;font-weight:500}
+        .schools-empty{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:5rem 2rem;grid-column:1/-1;color:var(--text-gray);text-align:center}
+        .schools-empty i{font-size:3rem;color:var(--neutral-200)}
+        .school-card{opacity:0;transform:translateY(30px)}
+        .school-card.animate{animation:cardSlideIn .6s cubic-bezier(0.4,0,0.2,1) forwards}
+        @keyframes cardSlideIn{to{opacity:1;transform:translateY(0)}}
+
+        /* ─── Modal ──────────────────────────────────────────── */
+        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;overflow-y:auto;animation:fadeIn .2s ease}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        .modal-content{background:#fff;border-radius:28px;max-width:700px;width:95%;margin:3% auto;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.2)}
+        .modal-header{background:var(--gradient-primary);padding:2.5rem 2rem 1.5rem;text-align:center;color:#fff}
+        .modal-header h2{font-size:1.6rem;font-weight:800;margin:.5rem 0 .25rem}
+        .modal-subtitle{opacity:.9;font-size:.95rem}
+        .modal-header .close{position:absolute;right:1.5rem;top:1.5rem;width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;color:#fff;transition:var(--transition)}
+        .modal-header .close:hover{background:rgba(255,255,255,.35)}
+        .modal-body{padding:2rem}
+        .school-logo{width:80px;height:80px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem}
+
+        /* ─── School Detail Modal ────────────────────────────── */
+        #schoolDetailModal .modal-content{max-width:700px}
+        .school-detail-banner{background:var(--gradient-primary);padding:2.5rem 2rem;text-align:center;color:#fff;position:relative}
+        .school-detail-banner .close{position:absolute;right:1.5rem;top:1.5rem;width:36px;height:36px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;color:#fff;transition:var(--transition)}
+        .school-detail-banner .close:hover{background:rgba(255,255,255,.35)}
+        #schoolModalIcon{font-size:3rem;margin-bottom:.75rem}
+        #schoolModalName{font-size:1.6rem;font-weight:800}
+        #schoolModalSubtitle{opacity:.85;font-size:.95rem;margin-top:.25rem}
+        .modal-body-scroll{padding:2rem;overflow-y:auto;max-height:60vh}
+        #schoolModalDescription{background:var(--light-blue);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;border-left:4px solid var(--primary-blue);font-size:1rem;color:var(--text-dark);line-height:1.7;word-break:break-word}
+        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+        .info-item{display:flex;align-items:flex-start;gap:.75rem;background:var(--neutral-100);border-radius:14px;padding:1rem}
+        .info-icon{width:38px;height:38px;background:var(--light-blue);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--primary-blue);flex-shrink:0}
+        .info-label{font-size:.8rem;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+        .info-value{font-size:.95rem;color:var(--text-dark);font-weight:600;margin-top:.15rem;word-break:break-word}
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+        .stat-card{background:var(--gradient-primary);border-radius:16px;padding:1.25rem;text-align:center;color:#fff}
+        .stat-number{font-size:2rem;font-weight:800}
+        .stat-label{font-size:.85rem;opacity:.9;margin-top:.25rem}
+        .password-section{background:var(--light-blue);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;text-align:center}
+        .password-section h3{color:var(--primary-blue);margin-bottom:.5rem}
+        .password-section p{color:var(--text-gray);font-size:.9rem;margin-bottom:1.25rem}
+        .password-btn{background:var(--gradient-primary);color:#fff;border:none;padding:.75rem 2rem;border-radius:12px;font-weight:600;cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:.5rem}
+        .password-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,64,175,.3)}
+        .social-section{text-align:center}
+        .social-section h3{color:var(--text-dark);margin-bottom:1rem;font-size:1rem}
+        .social-links{display:flex;justify-content:center;gap:.75rem}
+        .social-link{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;text-decoration:none;transition:var(--transition)}
+        .social-link.facebook{background:#1877f2}
+        .social-link.twitter{background:#1da1f2}
+        .social-link.instagram{background:linear-gradient(135deg,#e4405f,#fd1d1d,#fcb045)}
+        .social-link.linkedin{background:#0077b5}
+        .social-link:hover{transform:translateY(-3px) scale(1.1)}
+
+        /* ─── Login Modal ────────────────────────────────────── */
+        .login-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:3000;align-items:center;justify-content:center;padding:1rem}
+        .login-modal.show,.login-modal:not(.hidden){display:flex}
+        .login-modal-content{background:#fff;border-radius:24px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.25);max-height:calc(100vh - 2rem);overflow-y:auto}
+        .login-header{background:var(--gradient-primary);padding:2.5rem 2rem 2rem;text-align:center;color:#fff}
+        .login-icon{width:72px;height:72px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem}
+        .login-title{font-size:1.5rem;font-weight:800;margin-bottom:.25rem}
+        .login-subtitle{opacity:.85;font-size:.9rem}
+        .login-body{padding:2rem}
+        .form-group{margin-bottom:1.25rem}
+        .form-label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.4rem;color:var(--text-dark)}
+        .form-input{width:100%;padding:.875rem 1rem;border:1.5px solid var(--neutral-200);border-radius:12px;font-family:inherit;font-size:.95rem;color:var(--text-dark);transition:var(--transition);background:#fff;outline:none}
+        .form-input:focus{border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+        .login-btn{width:100%;padding:.875rem;background:var(--gradient-primary);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem}
+        .login-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(30,64,175,.3)}
+        .login-btn:disabled{opacity:.7;cursor:not-allowed}
+        .forgot-link{text-align:center;margin-top:1rem;font-size:.9rem;color:var(--text-gray)}
+        .forgot-link a{color:var(--primary-blue);font-weight:600;cursor:pointer;text-decoration:none}
+        .forgot-link a:hover{text-decoration:underline}
+        .login-close{position:absolute;right:1.25rem;top:1.25rem;width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:1.1rem;transition:var(--transition)}
+        .login-close:hover{background:rgba(255,255,255,.35)}
+
+        /* ─── School Login Modal ─────────────────────────────── */
+        .school-login-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:3000;align-items:center;justify-content:center;padding:1rem}
+        .school-login-modal.show{display:flex}
+        .school-login-content{background:#fff;border-radius:24px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.25);max-height:calc(100vh - 2rem);overflow-y:auto}
+        .school-login-header{background:var(--gradient-primary);padding:2.5rem 2rem 2rem;text-align:center;color:#fff;position:relative}
+        .school-login-title{font-size:1.4rem;font-weight:800;margin-bottom:.25rem}
+        .school-login-subtitle{opacity:.85;font-size:.88rem}
+        .school-login-body{padding:2rem}
+        .school-login-form .login-btn{width:100%}
+
+        /* ─── Toast ──────────────────────────────────────────── */
+        .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#1e293b;color:#fff;padding:1rem 1.5rem;border-radius:14px;display:flex;align-items:center;gap:.75rem;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.2);transform:translateX(110%);transition:transform .3s ease;max-width:420px}
+        .toast.show{transform:translateX(0)}
+        .toast.error{background:#dc2626}
+        .toast-icon{font-size:1.1rem}
+        .toast-close{margin-left:.5rem;background:none;border:none;color:rgba(255,255,255,.8);cursor:pointer;font-size:1rem;line-height:1}
+
+        /* ─── About & Contact Modal Styles ───────────────────── */
+        .about-content{display:flex;flex-direction:column;gap:2rem}
+        .about-mission{background:var(--light-blue);border-radius:16px;padding:1.5rem}
+        .about-mission h3{color:var(--primary-blue);margin-bottom:.75rem}
+        .about-values{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+        .value-card{background:var(--neutral-100);border-radius:14px;padding:1.25rem;text-align:center}
+        .value-icon{width:52px;height:52px;background:var(--gradient-primary);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.3rem;margin:0 auto .75rem}
+        .value-card h4{font-weight:700;color:var(--text-dark);margin-bottom:.4rem}
+        .value-card p{font-size:.88rem;color:var(--text-gray)}
+        .about-team{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:1rem}
+        .team-member{background:var(--neutral-100);border-radius:14px;padding:1.25rem;text-align:center}
+        .team-avatar{width:48px;height:48px;background:var(--gradient-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;margin:0 auto .75rem}
+        .team-member h5{font-weight:700;font-size:.9rem;margin-bottom:.25rem}
+        .team-member .role{font-size:.82rem;color:var(--text-gray)}
+        .contact-info{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem}
+        .contact-card{background:var(--neutral-100);border-radius:14px;padding:1.25rem;text-align:center}
+        .contact-icon{width:48px;height:48px;background:var(--gradient-primary);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;margin:0 auto .75rem}
+        .contact-card h4{font-weight:700;color:var(--text-dark);margin-bottom:.4rem}
+        .contact-card p{font-size:.88rem;color:var(--text-gray)}
+        .contact-hours-list{list-style:none;text-align:left;font-size:.82rem}
+        .contact-hours-list li{padding:.2rem 0}
+        .contact-hours-list .closed{color:#94a3b8;text-decoration:line-through}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+        /* ─── Footer ─────────────────────────────────────────── */
+        .footer{background:var(--gradient-dark);color:#fff;padding:4rem 0 2rem}
+        .footer-container{max-width:1400px;margin:0 auto;padding:0 2rem}
+        .footer-main{display:grid;grid-template-columns:2fr 1.2fr 1fr;gap:3rem;margin-bottom:3rem}
+        .footer-logo{display:flex;align-items:center;gap:.75rem;font-size:1.2rem;font-weight:800;margin-bottom:1rem}
+        .footer-logo i{font-size:1.6rem;color:var(--accent-blue)}
+        .footer-description{color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:1.5rem;font-size:.95rem}
+        .footer-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+        .footer-stat{text-align:center;background:rgba(255,255,255,.08);border-radius:12px;padding:.75rem}
+        .footer-stat-number{display:block;font-size:1.4rem;font-weight:800;color:var(--accent-blue)}
+        .footer-stat-label{font-size:.8rem;opacity:.8}
+        .footer-contact h3,.footer-social h3{font-size:1rem;font-weight:700;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem}
+        .footer-contact-item{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:1rem}
+        .footer-contact-icon{width:40px;height:40px;min-width:40px;background:rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .footer-contact-content h4{font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+        .footer-contact-content p{font-size:.85rem;opacity:.85;margin:0;word-break:break-word}
+        .footer-social-links{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem}
+        .footer-social-link{width:50px;height:50px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;font-size:1.25rem;transition:var(--transition)}
+        .footer-social-link:hover{transform:translateY(-4px) scale(1.1);background:rgba(255,255,255,.2)}
+        .footer-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);margin:3rem 0 2rem}
+        .footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;opacity:.9}
+        .footer-copyright{font-size:.9rem;font-weight:500}
+        .footer-legal-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+        .footer-legal-link{color:#fff;text-decoration:none;font-size:.9rem;opacity:.85;transition:var(--transition)}
+        .footer-legal-link:hover{opacity:1;text-decoration:underline}
+
+        /* ─── Animations ─────────────────────────────────────── */
+        @keyframes spin{to{transform:rotate(360deg)}}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .loading-spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin 1s ease-in-out infinite}
+        @media(prefers-reduced-motion:no-preference){.scroll-animate{opacity:0;transform:translateY(30px);transition:all .6s cubic-bezier(0.4,0,0.2,1)}.scroll-animate.in-view{opacity:1;transform:translateY(0)}}
+
+        /* ─── Responsive ─────────────────────────────────────── */
+        @media(max-width:1024px){.footer-main{grid-template-columns:1fr;gap:2rem}.about-values{grid-template-columns:1fr 1fr}.contact-info{grid-template-columns:repeat(2,minmax(0,1fr))}.form-row{grid-template-columns:1fr}}
+        @media(max-width:768px){.nav-menu{display:none}.mobile-menu-btn{display:flex}.header h1{font-size:1.8rem}.schools-grid{grid-template-columns:1fr}.modal-content{width:95%;margin:5% auto}.about-team{grid-template-columns:repeat(2,minmax(0,1fr))}.footer-stats{grid-template-columns:1fr 1fr}.contact-info{grid-template-columns:1fr}.about-values{grid-template-columns:1fr}.footer-bottom{flex-direction:column;text-align:center}.info-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}}
+        @media(max-width:480px){.header h1{font-size:1.4rem}.about-team{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="nav-logos">
+                    <div class="nav-logo"><img src="CITY HALL LOGO.png" alt="City Hall Logo" class="nav-logo-img"></div>
+                    <div class="nav-logo"><img src="CEEDO NEW LOGO 2026.png" alt="CEEDO Logo" class="nav-logo-img"></div>
+                </div>
+                <div class="nav-site-name" id="navSiteName">UTOWN DATA NAME</div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#schools">Schools</a></li>
+                <li><a onclick="openAboutModal()">About Us</a></li>
+                <li><a onclick="openContactModal()">Contact Us</a></li>
+            </ul>
+            <button class="sign-in-btn" onclick="handleSignIn()" id="signInButton"><i class="fas fa-user"></i> SIGN IN</button>
+            <div class="user-dropdown hidden" id="userDropdown">
+                <button class="user-dropdown-btn" onclick="toggleUserDropdown()" id="userDropdownBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="userDropdownText">Hello, User</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-dropdown-content" id="userDropdownContent">
+                    <div class="dropdown-item" onclick="handleDashboard()"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+                    <div class="dropdown-item logout" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                </div>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><a href="#home" onclick="closeMobileMenu()">Home</a></li>
+                <li><a href="#schools" onclick="closeMobileMenu()">Schools</a></li>
+                <li><a onclick="openAboutModal(); closeMobileMenu()">About Us</a></li>
+                <li><a onclick="openContactModal(); closeMobileMenu()">Contact Us</a></li>
+            </ul>
+            <div class="mobile-sign-in">
+                <button class="sign-in-btn" onclick="handleSignIn()" id="mobileSignInButton"><i class="fas fa-user"></i> SIGN IN</button>
+                <div class="user-dropdown hidden" id="mobileUserDropdown">
+                    <button class="user-dropdown-btn" onclick="toggleMobileUserDropdown()">
+                        <i class="fas fa-user"></i>
+                        <span id="mobileUserDropdownText">Hello, User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown-content" id="mobileUserDropdownContent">
+                        <div class="dropdown-item" onclick="handleDashboard(); closeMobileMenu()"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+                        <div class="dropdown-item logout" onclick="handleSignOut(); closeMobileMenu()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Header -->
+    <header class="header" id="home">
+        <div class="header-content">
+            <h1><i class="fas fa-graduation-cap"></i> UTOWN DATA NAME</h1>
+            <p>Empowering minds, shaping futures through innovative education and academic excellence across premier institutions worldwide</p>
+            <div class="header-stats">
+                <div class="header-stat"><span class="header-stat-number" id="headerSchoolCount">—</span><span class="header-stat-label">College Schools</span></div>
+                <div class="header-stat"><span class="header-stat-number">450+</span><span class="header-stat-label">Expert Faculty</span></div>
+                <div class="header-stat"><span class="header-stat-number">15K+</span><span class="header-stat-label">Bataan Students</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Schools Section -->
+    <div class="container" id="schools">
+        <div class="section-title scroll-animate">
+            <h2>UTOWN DATA NAME</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="filter-section">
+            <div class="filter-dropdown">
+                <button class="filter-btn" onclick="toggleDropdown()">
+                    <i class="fas fa-filter"></i>
+                    <span id="filter-text">All Schools</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="filter-dropdown-content" id="filterDropdown">
+                    <div class="filter-option active-filter" onclick="filterSchools('all')">All Schools</div>
+                </div>
+            </div>
+        </div>
+        <div class="schools-grid" id="schoolsGrid">
+            <div class="schools-loading"><div class="loading-ring"></div><p>Loading schools from database...</p></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo"><i class="fas fa-graduation-cap"></i><span>UTOWN DATA NAME</span></div>
+                    <p class="footer-description">This platform serves as the official digital registry for student enrollment across Balanga City, providing real-time data on student populations, school capacities, and educational growth within Bataan's capital.</p>
+                    <div class="footer-stats">
+                        <div class="footer-stat"><span class="footer-stat-number">15K+</span><span class="footer-stat-label">Students</span></div>
+                        <div class="footer-stat"><span class="footer-stat-number">450+</span><span class="footer-stat-label">Faculty</span></div>
+                        <div class="footer-stat"><span class="footer-stat-number" id="footerSchoolCount">0</span><span class="footer-stat-label">Schools</span></div>
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <h3><i class="fas fa-address-book"></i> Contact Info</h3>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="footer-contact-content"><h4>Location</h4><p>2nd Floor Balanga City Hall</p></div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon"><i class="fas fa-phone"></i></div>
+                        <div class="footer-contact-content"><h4>Phone &amp; Fax</h4><p>+63 960 568 3438</p></div>
+                    </div>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="footer-contact-content"><h4>Email Us</h4><p>ceedo@cityofbalanga.gov.ph</p></div>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <h3><i class="fas fa-share-alt"></i> Follow Us</h3>
+                    <div class="footer-social-links">
+                        <a href="https://www.facebook.com/CityEducationandExcellenceDevelopmentOffice" class="footer-social-link facebook" onclick="logActivityToSupabase(currentUser,'has clicked Facebook Link')"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="footer-social-link twitter" onclick="logActivityToSupabase(currentUser,'has clicked Twitter Link')"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer-social-link instagram" onclick="logActivityToSupabase(currentUser,'has clicked Instagram Link')"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="footer-social-link linkedin" onclick="logActivityToSupabase(currentUser,'has clicked LinkedIn Link')"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="footer-social-link youtube" onclick="logActivityToSupabase(currentUser,'has clicked YouTube Link')"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="footer-social-link tiktok" onclick="logActivityToSupabase(currentUser,'has clicked TikTok Link')"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-bottom">
+                <div class="footer-copyright">&copy; 2026 UTOWN DATA NAME. All rights reserved.</div>
+                <div class="footer-legal-links">
+                    <a href="#" class="footer-legal-link" onclick="logActivityToSupabase(currentUser,'has clicked Privacy Policy')">Privacy Policy</a>
+                    <a href="#" class="footer-legal-link" onclick="logActivityToSupabase(currentUser,'has clicked Terms of Service')">Terms of Service</a>
+                    <a href="#" class="footer-legal-link" onclick="logActivityToSupabase(currentUser,'has clicked Cookie Policy')">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- About Us Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="position:relative;">
+                <span class="close" onclick="closeModal('aboutModal')">&times;</span>
+                <div class="school-logo"><i class="fas fa-users"></i></div>
+                <h2>About UTOWN DATA NAME</h2>
+                <p class="modal-subtitle">Transforming Lives Through Quality Education</p>
+            </div>
+            <div class="modal-body">
+                <div class="about-content">
+                    <div class="about-mission"><h3><i class="fas fa-bullseye"></i> Our Mission</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p></div>
+                    <div class="about-values">
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-star"></i></div><h4>Excellence</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-lightbulb"></i></div><h4>Innovation</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-heart"></i></div><h4>Integrity</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-globe"></i></div><h4>Global Perspective</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                    </div>
+                    <div class="info-section">
+                        <h3 style="margin-bottom:1.5rem;color:var(--primary-blue);"><i class="fas fa-users-cog"></i> Leadership Team</h3>
+                        <div class="about-team">
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-user-tie"></i></div><h5>Ms. Tarra Ann M. Pagdanganan</h5><p class="role">City Government Assistant Department Head I</p></div>
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-chalkboard-teacher"></i></div><h5>Theresa Jane B. Mendoza</h5><p class="role">Development Management Officer II</p></div>
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-laptop"></i></div><h5>Zyrine B. Padilla</h5><p class="role">Development Management Officer I</p></div>
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-handshake"></i></div><h5>Ms. Reina G. Hernando</h5><p class="role">Education Research Assistant I</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Us Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="position:relative;">
+                <span class="close" onclick="closeModal('contactModal')">&times;</span>
+                <div class="school-logo"><i class="fas fa-envelope"></i></div>
+                <h2>Contact Us</h2>
+                <p class="modal-subtitle">Get in Touch - We're Here to Help</p>
+            </div>
+            <div class="modal-body">
+                <div class="contact-info">
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-phone"></i></div><h4>Call Us</h4><p>Office: +63 960 568 3438</p></div>
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-envelope"></i></div><h4>Email Us</h4><p>ceedo@cityofbalanga.gov.ph</p></div>
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div><h4>Visit Us</h4><p>2nd Floor Balanga City Hall<br>Balanga City, Bataan<br>Philippines</p></div>
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-clock"></i></div><h4>Office Hours</h4><ul class="contact-hours-list"><li><strong>Monday - Thursday</strong> 8:00 AM - 6:30 PM</li><li class="closed">Friday: Closed</li><li class="closed">Saturday: Closed</li><li class="closed">Sunday: Closed</li></ul></div>
+                </div>
+                <div class="social-section">
+                    <h3><i class="fas fa-share-alt"></i> Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <form onsubmit="handleContactSubmit(event)" style="margin-top:1.5rem;">
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">First Name *</label><input type="text" id="firstName" class="form-input" required placeholder="First name"></div>
+                        <div class="form-group"><label class="form-label">Last Name *</label><input type="text" id="lastName" class="form-input" required placeholder="Last name"></div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Email *</label><input type="email" id="contactEmail" class="form-input" required placeholder="your@email.com"></div>
+                    <div class="form-group"><label class="form-label">Phone</label><input type="tel" id="contactPhone" class="form-input" placeholder="+63..."></div>
+                    <div class="form-group"><label class="form-label">Subject *</label><input type="text" id="subject" class="form-input" required placeholder="Subject"></div>
+                    <div class="form-group"><label class="form-label">Message *</label><textarea id="message" class="form-input" rows="4" required placeholder="Your message..." style="resize:vertical;"></textarea></div>
+                    <button type="submit" class="login-btn"><i class="fas fa-paper-plane"></i> Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- School Detail Modal -->
+    <div id="schoolDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="school-detail-banner">
+                <span class="close" onclick="closeModal('schoolDetailModal')">&times;</span>
+                <div id="schoolModalIcon" style="font-size:3rem;margin-bottom:.75rem;"><i class="fas fa-school"></i></div>
+                <div id="schoolModalName" style="font-size:1.6rem;font-weight:800;"></div>
+                <div id="schoolModalSubtitle" style="opacity:.85;font-size:.95rem;margin-top:.25rem;"></div>
+            </div>
+            <div class="modal-body-scroll">
+                <div id="schoolModalDescription" style="display:none;"></div>
+                <div class="info-grid">
+                    <div class="info-item" id="schoolModalPresident" style="display:none;">
+                        <div class="info-icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="info-content"><div class="info-label">School President</div><div class="info-value" id="schoolModalPresidentValue"></div></div>
+                    </div>
+                    <div class="info-item" id="schoolModalAddress" style="display:none;">
+                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="info-content"><div class="info-label">Address</div><div class="info-value" id="schoolModalAddressValue"></div></div>
+                    </div>
+                    <div class="info-item" id="schoolModalEmail" style="display:none;">
+                        <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="info-content"><div class="info-label">Email</div><div class="info-value" id="schoolModalEmailValue"></div></div>
+                    </div>
+                    <div class="info-item" id="schoolModalContact" style="display:none;">
+                        <div class="info-icon"><i class="fas fa-phone"></i></div>
+                        <div class="info-content"><div class="info-label">Contact Number</div><div class="info-value" id="schoolModalContactValue"></div></div>
+                    </div>
+                    <div class="info-item" id="schoolModalLandline" style="display:none;">
+                        <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+                        <div class="info-content"><div class="info-label">Landline</div><div class="info-value" id="schoolModalLandlineValue"></div></div>
+                    </div>
+                </div>
+                <div class="stats-grid" id="schoolModalStatsGrid" style="display:none;">
+                    <div class="stat-card"><div class="stat-number" id="schoolModalTeaching">0</div><div class="stat-label">Teaching Staff</div></div>
+                    <div class="stat-card"><div class="stat-number" id="schoolModalNonTeaching">0</div><div class="stat-label">Non-Teaching Staff</div></div>
+                </div>
+                <div class="password-section" id="schoolAccessSection">
+                    <h3><i class="fas fa-lock"></i> Administrative Access</h3>
+                    <p>Access the school administrative portal</p>
+                    <div class="password-input">
+                        <button class="password-btn" onclick="openSchoolLoginModal()"><i class="fas fa-key"></i> Access Portal</button>
+                    </div>
+                </div>
+                <div class="social-section">
+                    <h3><i class="fas fa-share-alt"></i> Connect With Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Super Admin Login Modal -->
+    <div class="login-modal hidden" id="loginModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:3000;align-items:center;justify-content:center;padding:1rem;">
+        <div class="login-modal-content">
+            <div class="login-header" style="position:relative;">
+                <span class="login-close" onclick="closeLoginModal()">&times;</span>
+                <div class="login-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="login-title">Admin Sign In</div>
+                <div class="login-subtitle">Enter your administrator credentials</div>
+            </div>
+            <div class="login-body">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="username" class="form-input" placeholder="Enter username" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="password" class="form-input" placeholder="Enter password" autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="login-btn" id="loginSubmitBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                    <div class="forgot-link">Forgot password? <a onclick="handleForgotPassword()">Click here</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- School Login Modal -->
+    <div class="school-login-modal" id="schoolLoginModal">
+        <div class="school-login-content">
+            <div class="school-login-header" style="position:relative;">
+                <span class="login-close" onclick="closeSchoolLoginModal()">&times;</span>
+                <div class="login-icon"><i class="fas fa-school"></i></div>
+                <div class="school-login-title" id="schoolLoginTitle">Access School Portal</div>
+                <div class="school-login-subtitle" id="schoolLoginSubtitle">Enter your credentials</div>
+            </div>
+            <div class="school-login-body">
+                <form class="school-login-form" onsubmit="handleSchoolLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="schoolUsername" class="form-input" placeholder="School username" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="schoolPassword" class="form-input" placeholder="School password" autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="login-btn" id="schoolLoginSubmitBtn"><i class="fas fa-sign-in-alt"></i> Access Portal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // =========================================================
+    // SUPABASE REST API HELPERS
+    // =========================================================
+    const SUPABASE_URL = 'https://bbbaawqqgjzrbadmvpwu.supabase.co/rest/v1/';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiYmFhd3FxZ2p6cmJhZG12cHd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxOTkwMzMsImV4cCI6MjA5NDc3NTAzM30.jlqT2BfghVM7h20Oqb8MAu-eiIAQ2kthB_jlMXe-dYQ';
+
+    const SB_HDRS = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+    };
+
+    async function sbGet(table, query) {
+        const url = query ? `${SUPABASE_URL}/${table}?${query}` : `${SUPABASE_URL}/${table}`;
+        const res = await fetch(url, { headers: SB_HDRS });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+
+    async function sbInsert(table, data) {
+        const res = await fetch(`${SUPABASE_URL}/${table}`, {
+            method: 'POST',
+            headers: SB_HDRS,
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return res.json();
+    }
+
+    // =========================================================
+    // STATE
+    // =========================================================
+    let currentUser = null;
+    let allSchools  = [];
+    let currentSchool = null;
+    let activeFilter  = 'all';
+    let clientInfo = { ipAddress: 'Unknown', pcName: 'Unknown' };
+
+    async function initClientInfo() {
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            clientInfo.ipAddress = data.ip || 'Unknown';
+        } catch (e) { clientInfo.ipAddress = 'Unknown'; }
+        clientInfo.pcName = navigator.platform || navigator.userAgentData?.platform || 'Unknown Device';
+    }
+
+    // =========================================================
+    // SUPABASE ACTIVITY LOG
+    // =========================================================
+    async function logActivityToSupabase(user, action) {
+        try {
+            const now = new Date();
+            const readable = now.toLocaleDateString('en-PH', {
+                year:'numeric', month:'long', day:'numeric',
+                hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true
+            });
+            const fullName = user
+                ? ((user.fname && user.lname) ? user.fname + ' ' + user.lname
+                    : (user.fname || user.username || (user.fullname ? user.fullname.split(' ')[0] : 'User')))
+                : 'Guest';
+            const ip = clientInfo.ipAddress || 'Unknown';
+            const pc = clientInfo.pcName || 'Unknown';
+            const description = fullName + ' ' + (action || 'has Login') + ' at ' + readable + ' | IP: ' + ip + ' | PC: ' + pc;
+            await sbInsert('ActivityLog', {
+                ActivityLog_AccountRole: user ? 'superadmin' : 'guest',
+                ActivityLog_Description: description,
+                ActivityLog_IPAddress:   ip,
+                ActivityLog_Location:    'index.html',
+                ActivityLog_DeviceName:  pc,
+                ActivityLog_created_at:  now.toISOString()
+            });
+        } catch (err) { console.error('Failed to log activity:', err); }
+    }
+
+    // Legacy alias used in inline onclick handlers
+    const logActivityToFirestore = logActivityToSupabase;
+
+    // =========================================================
+    // LOAD SCHOOLS FROM SUPABASE
+    // =========================================================
+    async function loadSchoolsFromSupabase() {
+        const grid = document.getElementById('schoolsGrid');
+        try {
+            const rows = await sbGet('ListofSchool', 'deletestats=eq.0');
+
+            if (!rows.length) {
+                grid.innerHTML = '<div class="schools-empty"><i class="fas fa-school"></i><p>No schools found in the database.</p></div>';
+                return;
+            }
+
+            // Map school_id → id for compatibility
+            allSchools = rows.map(function(r) { return Object.assign({ id: r.school_id }, r); });
+            allSchools.sort(function(a, b) { return (a.schoolname || '').localeCompare(b.schoolname || ''); });
+
+            const activeCount = allSchools.filter(function(s) { return s.deletestats !== '1'; }).length;
+            const countEl   = document.getElementById('headerSchoolCount');
+            const footerEl  = document.getElementById('footerSchoolCount');
+            if (countEl)  countEl.textContent  = activeCount;
+            if (footerEl) footerEl.textContent = activeCount;
+
+            populateFilterDropdown();
+            renderSchoolCards(allSchools);
+        } catch (err) {
+            console.error('Error loading schools:', err);
+            grid.innerHTML = '<div class="schools-empty"><i class="fas fa-exclamation-triangle"></i><p>Failed to load schools. Please refresh the page.</p></div>';
+        }
+    }
+
+    // =========================================================
+    // LOAD SETTINGS FROM SUPABASE
+    // =========================================================
+    async function loadAndApplySettings() {
+        try {
+            const rows = await sbGet('Settings', '');
+            const s = rows[0] || {};
+            if (s.SystemName) {
+                const navEl = document.getElementById('navSiteName');
+                if (navEl) navEl.textContent = s.SystemName;
+                document.title = s.SystemName;
+            }
+        } catch (e) { console.error('loadAndApplySettings error:', e); }
+    }
+
+    // =========================================================
+    // FILTER DROPDOWN
+    // =========================================================
+    function populateFilterDropdown() {
+        const dropdown = document.getElementById('filterDropdown');
+        const existing = dropdown.querySelectorAll('.filter-option:not(:first-child)');
+        existing.forEach(function(el) { el.remove(); });
+
+        allSchools.forEach(function(school) {
+            if (school.deletestats === '1') return;
+            const abbrev = school.schoolabbrev || school.schoolname || school.id;
+            const option = document.createElement('div');
+            option.className = 'filter-option';
+            option.textContent = abbrev;
+            option.setAttribute('data-school-id', school.id);
+            option.onclick = (function(sid, lbl) { return function() { filterSchools(sid, lbl); }; })(school.id, abbrev);
+            dropdown.appendChild(option);
+        });
+    }
+
+    function filterSchools(schoolId, label) {
+        logActivityToSupabase(currentUser, 'has filtered Schools by ' + (label || 'All Schools'));
+        activeFilter = schoolId;
+
+        document.getElementById('filter-text').textContent = label || 'All Schools';
+        document.querySelectorAll('.filter-option').forEach(function(opt) { opt.classList.remove('active-filter'); });
+        if (schoolId === 'all') {
+            document.querySelector('.filter-option').classList.add('active-filter');
+        } else {
+            const match = document.querySelector('.filter-option[data-school-id="' + schoolId + '"]');
+            if (match) match.classList.add('active-filter');
+        }
+
+        if (schoolId === 'all') {
+            renderSchoolCards(allSchools);
+        } else {
+            renderSchoolCards(allSchools.filter(function(s) { return s.id === schoolId; }));
+        }
+
+        document.getElementById('filterDropdown').classList.remove('show');
+    }
+
+    function toggleDropdown() {
+        document.getElementById('filterDropdown').classList.toggle('show');
+    }
+
+    // =========================================================
+    // SCHOOL CARDS
+    // =========================================================
+    function renderSchoolCards(schools) {
+        const grid = document.getElementById('schoolsGrid');
+        grid.innerHTML = '';
+
+        const visible = schools.filter(function(s) { return s.deletestats !== '1'; });
+
+        if (visible.length === 0) {
+            grid.innerHTML = '<div class="schools-empty"><i class="fas fa-school"></i><p>No schools match the selected filter.</p></div>';
+            return;
+        }
+
+        visible.forEach(function(school, index) {
+            const card = createSchoolCard(school, index);
+            grid.appendChild(card);
+        });
+
+        const cards = grid.querySelectorAll('.school-card');
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry, i) {
+                if (entry.isIntersecting) {
+                    setTimeout(function() { entry.target.classList.add('animate'); }, i * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        cards.forEach(function(card) { observer.observe(card); });
+    }
+
+    function createSchoolCard(school, index) {
+        const card = document.createElement('div');
+        card.className = 'school-card';
+        card.setAttribute('data-school-id', school.id);
+
+        const gradients = [
+            'linear-gradient(135deg,#1e40af 0%,#3b82f6 100%)',
+            'linear-gradient(135deg,#065f46 0%,#10b981 100%)',
+            'linear-gradient(135deg,#7c2d12 0%,#f97316 100%)',
+            'linear-gradient(135deg,#4c1d95 0%,#8b5cf6 100%)',
+            'linear-gradient(135deg,#881337 0%,#f43f5e 100%)',
+            'linear-gradient(135deg,#164e63 0%,#06b6d4 100%)',
+            'linear-gradient(135deg,#713f12 0%,#eab308 100%)',
+            'linear-gradient(135deg,#1e3a8a 0%,#6366f1 100%)',
+        ];
+        const grad = gradients[index % gradients.length];
+        const abbrev = school.schoolabbrev || '?';
+        const name = school.schoolname || 'Unknown School';
+        const address = school.address || '';
+        const description = school.description || '';
+
+        card.innerHTML =
+            '<div class="school-image" style="background:' + grad + ';">' +
+                '<div class="school-initials">' + abbrev + '</div>' +
+                '<div class="school-image-overlay"><div class="school-icon"><i class="fas fa-school"></i></div></div>' +
+            '</div>' +
+            '<div class="school-content">' +
+                '<span class="school-abbrev-badge">' + abbrev + '</span>' +
+                '<h3>' + name + '</h3>' +
+                (address ? '<div class="school-location"><i class="fas fa-map-marker-alt"></i><span>' + address + '</span></div>' : '') +
+                (description ? '<p class="school-description">' + (description.length > 140 ? description.substring(0, 140) + '…' : description) + '</p>' : '') +
+            '</div>';
+
+        card.addEventListener('click', function() { openSchoolModal(school); });
+        return card;
+    }
+
+    // =========================================================
+    // SCHOOL DETAIL MODAL
+    // =========================================================
+    function openSchoolModal(school) {
+        logActivityToSupabase(currentUser, 'has viewed ' + (school.schoolname || 'a school') + ' School Information');
+        currentSchool = school;
+
+        document.getElementById('schoolModalName').textContent = school.schoolname || 'Unknown School';
+        document.getElementById('schoolModalSubtitle').textContent = school.schoolabbrev || '';
+
+        const descBox = document.getElementById('schoolModalDescription');
+        if (school.description) { descBox.textContent = school.description; descBox.style.display = 'block'; }
+        else { descBox.style.display = 'none'; }
+
+        function setInfoItem(itemId, valueId, value) {
+            const item = document.getElementById(itemId);
+            const val  = document.getElementById(valueId);
+            if (value) { val.textContent = value; item.style.display = 'flex'; }
+            else { item.style.display = 'none'; }
+        }
+
+        setInfoItem('schoolModalPresident', 'schoolModalPresidentValue', school.schoolpres);
+        setInfoItem('schoolModalAddress',   'schoolModalAddressValue',   school.address);
+        setInfoItem('schoolModalEmail',     'schoolModalEmailValue',     school.email_add);
+        setInfoItem('schoolModalContact',   'schoolModalContactValue',   school.contact_number);
+        setInfoItem('schoolModalLandline',  'schoolModalLandlineValue',  school.landline);
+
+        const statsGrid = document.getElementById('schoolModalStatsGrid');
+        if (school.teaching_staff !== undefined || school.nonteachingstaff !== undefined) {
+            document.getElementById('schoolModalTeaching').textContent    = school.teaching_staff    !== undefined ? school.teaching_staff    : '—';
+            document.getElementById('schoolModalNonTeaching').textContent = school.nonteachingstaff  !== undefined ? school.nonteachingstaff  : '—';
+            statsGrid.style.display = 'grid';
+        } else {
+            statsGrid.style.display = 'none';
+        }
+
+        const accessSection = document.getElementById('schoolAccessSection');
+        if (accessSection) accessSection.style.display = currentUser ? 'none' : 'block';
+
+        document.getElementById('schoolDetailModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // =========================================================
+    // SCHOOL LOGIN
+    // =========================================================
+    function openSchoolLoginModal() {
+        if (!currentSchool) return;
+        const schoolName = currentSchool.schoolname || 'School';
+        document.getElementById('schoolLoginTitle').textContent    = 'Access ' + schoolName + ' Portal';
+        document.getElementById('schoolLoginSubtitle').textContent = 'Enter your credentials to access the administrative portal for ' + schoolName;
+        document.getElementById('schoolUsername').value = '';
+        document.getElementById('schoolPassword').value = '';
+        document.getElementById('schoolLoginModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSchoolLoginModal() {
+        document.getElementById('schoolLoginModal').classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
+
+    async function handleSchoolLogin(event) {
+        event.preventDefault();
+        if (!currentSchool) { showToast('No school selected', 'error'); return; }
+
+        const username  = document.getElementById('schoolUsername').value.trim();
+        const password  = document.getElementById('schoolPassword').value;
+        const submitBtn = document.getElementById('schoolLoginSubmitBtn');
+
+        if (!username || !password) { showToast('Please enter both username and password', 'error'); return; }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<div class="loading-spinner"></div> Authenticating...';
+
+        try {
+            const rows = await sbGet('ListofSchool', 'username=eq.' + encodeURIComponent(username) + '&deletestats=eq.0');
+
+            if (!rows.length) {
+                showToast('ACCOUNT NOT FOUND', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Portal';
+                return;
+            }
+
+            const schoolDoc = Object.assign({ id: rows[0].school_id }, rows[0]);
+
+            if (schoolDoc.password === password) {
+                const schoolName = schoolDoc.schoolname || 'School';
+                localStorage.setItem('schoolLoginData', JSON.stringify({
+                    username: username,
+                    schoolName: schoolName,
+                    schoolData: schoolDoc,
+                    loginTime: new Date().toISOString()
+                }));
+                showToast('Access Granted! Redirecting to school portal...');
+                logActivityToSupabase(currentUser, 'has accessed ' + schoolName + ' portal with username: ' + username);
+                document.getElementById('schoolUsername').value = '';
+                document.getElementById('schoolPassword').value = '';
+                closeSchoolLoginModal();
+                closeModal('schoolDetailModal');
+                setTimeout(function() { window.location.href = 'school.html'; }, 1200);
+            } else {
+                showToast('INCORRECT PASSWORD', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Portal';
+            }
+        } catch (error) {
+            console.error('School login error:', error);
+            showToast('Login failed. Please try again.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Access Portal';
+        }
+    }
+
+    // =========================================================
+    // SUPER ADMIN AUTHENTICATION (Supabase)
+    // =========================================================
+async function authenticateUser(username, password) {
+    try {
+        const rows = await sbGet('SuperAdminAccount', 'username=eq.' + encodeURIComponent(username) + '&delstats=eq.0');
+        if (!rows.length) return { success: false, error: 'ACCOUNT_NOT_FOUND' };
+        const userDoc = Object.assign({ id: rows[0].adminID }, rows[0]);
+        // Split fullname into fname/lname for compatibility
+        const parts = (userDoc.fullname || '').split(' ');
+        userDoc.fname = parts[0] || '';
+        userDoc.lname = parts.slice(1).join(' ') || '';
+        userDoc.username = username;
+        if (userDoc.password === password) return { success: true, user: userDoc };
+        return { success: false, error: 'WRONG_PASSWORD' };
+    } catch (error) {
+        console.error('Authentication error:', error);
+        return { success: false, error: 'SYSTEM_ERROR', details: error.message };
+    }
+}
+
+    async function handleLogin(event) {
+    event.preventDefault();
+    const username  = document.getElementById('username').value.trim();
+    const password  = document.getElementById('password').value;
+    const submitBtn = document.getElementById('loginSubmitBtn');
+
+    if (!username || !password) { showToast('Please fill in all fields', 'error'); return; }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<div class="loading-spinner"></div> Authenticating...';
+
+    try {
+        const result = await authenticateUser(username, password);
+        if (result.success) {
+            currentUser = result.user;
+            
+            // ✅ NEW: Save session with all required data
+            const sessionData = {
+                username: currentUser.username,
+                fullname: currentUser.fullname || '',
+                fname: currentUser.fname || currentUser.username,
+                lname: currentUser.lname || '',
+                email: currentUser.email || '',
+                role: currentUser.role || 'superadmin',
+                adminID: currentUser.id || currentUser.adminID || '',
+                sessionStartTime: new Date().toISOString(),
+                sessionId: 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+            };
+            
+            localStorage.setItem('utownUser', JSON.stringify(sessionData));
+            
+            // Verify data was saved
+            const verify = localStorage.getItem('utownUser');
+            if (!verify) {
+                showToast('Error: Could not save session. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                return;
+            }
+            
+            logActivityToSupabase(sessionData, 'has Login');
+            const displayName = sessionData.fname;
+            showToast('Login successful! Redirecting to dashboard...');
+            
+            // Close modal
+            closeLoginModal();
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            // ✅ NEW: Redirect to superadmin dashboard
+            setTimeout(function() {
+                window.location.href = 'superadmin.html?sessionInit=1';
+            }, 800);
+            
+        } else {
+            switch (result.error) {
+                case 'ACCOUNT_NOT_FOUND': showToast('ACCOUNT NOT FOUND', 'error'); break;
+                case 'WRONG_PASSWORD':    showToast('INCORRECT PASSWORD', 'error'); break;
+                default: showToast('Login failed. Please try again.', 'error');
+            }
+            document.getElementById('password').value = '';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        showToast('System error. Please try again later.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+    }
+}
+
+    // =========================================================
+    // SESSION
+    // =========================================================
+    function checkExistingSession() {
+        const storedUser = localStorage.getItem('utownUser');
+        if (storedUser) {
+            try {
+                currentUser = JSON.parse(storedUser);
+                updateUIForLoggedInUser(currentUser);
+            } catch (e) { localStorage.removeItem('utownUser'); }
+        }
+    }
+
+    function updateUIForLoggedInUser(user) {
+        document.querySelectorAll('#signInButton,#mobileSignInButton').forEach(function(btn) { btn.classList.add('hidden'); });
+        document.querySelectorAll('#userDropdown,#mobileUserDropdown').forEach(function(d) { d.classList.remove('hidden'); });
+        const name = user.fname ? user.fname : (user.fullname ? user.fullname.split(' ')[0] : user.username);
+        document.querySelectorAll('#userDropdownText,#mobileUserDropdownText').forEach(function(t) { t.textContent = 'Hello, ' + name; });
+    }
+
+    function updateUIForLoggedOutUser() {
+        document.querySelectorAll('#signInButton,#mobileSignInButton').forEach(function(btn) { btn.classList.remove('hidden'); });
+        document.querySelectorAll('#userDropdown,#mobileUserDropdown').forEach(function(d) { d.classList.add('hidden'); });
+        document.querySelectorAll('#userDropdownContent,#mobileUserDropdownContent').forEach(function(c) { c.classList.remove('show'); });
+    }
+
+    function toggleUserDropdown()       { document.getElementById('userDropdownContent').classList.toggle('show'); }
+    function toggleMobileUserDropdown() { document.getElementById('mobileUserDropdownContent').classList.toggle('show'); }
+
+function handleDashboard() {
+    if (currentUser) logActivityToSupabase(currentUser, 'has accessed the Dashboard');
+    showToast('Redirecting to Dashboard...');
+    document.getElementById('userDropdownContent').classList.remove('show');
+    document.getElementById('mobileUserDropdownContent').classList.remove('show');
+    setTimeout(function() { 
+        window.location.href = 'superadmin.html?fromMenu=1'; 
+    }, 1000);
+}
+
+    function handleSignOut() {
+        const userToLog = currentUser;
+        currentUser = null;
+        localStorage.removeItem('utownUser');
+        updateUIForLoggedOutUser();
+        if (userToLog) logActivityToSupabase(userToLog, 'has Logged Out');
+        showToast('You have been signed out successfully');
+    }
+
+    // =========================================================
+    // TOAST
+    // =========================================================
+    function showToast(message, type) {
+        type = type || 'success';
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast' + (type === 'error' ? ' error' : '');
+        const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+        toast.innerHTML = '<i class="toast-icon ' + icon + '"></i><span>' + message + '</span><button class="toast-close" onclick="this.parentElement.remove()">&times;</button>';
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.classList.add('show'); }, 100);
+        setTimeout(function() {
+            if (toast.parentElement) { toast.classList.remove('show'); setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300); }
+        }, 5000);
+    }
+
+    // =========================================================
+    // UI HELPERS
+    // =========================================================
+    function openAboutModal()   { logActivityToSupabase(currentUser,'has opened About Us');   document.getElementById('aboutModal').style.display = 'block'; document.body.style.overflow = 'hidden'; }
+    function openContactModal() { logActivityToSupabase(currentUser,'has opened Contact Us'); document.getElementById('contactModal').style.display = 'block'; document.body.style.overflow = 'hidden'; }
+    function closeModal(id)     { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; }
+
+    function handleSignIn() {
+        const loginModal = document.getElementById('loginModal');
+        loginModal.classList.remove('hidden');
+        loginModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLoginModal() {
+        const loginModal = document.getElementById('loginModal');
+        loginModal.classList.add('hidden');
+        loginModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function handleForgotPassword() {
+        const accessCode = prompt('Please enter the access code:');
+        if (accessCode === null) return;
+        if (accessCode === 'superadmin') {
+            showToast("Password reset successful. Please check the Admin's Messenger for your new login credentials");
+        } else {
+            showToast('Invalid access code. Please try again.', 'error');
+        }
+    }
+
+    function toggleMobileMenu() {
+        document.getElementById('mobileMenu').classList.toggle('active');
+        document.querySelector('.mobile-menu-btn').classList.toggle('active');
+    }
+
+    function closeMobileMenu() {
+        document.getElementById('mobileMenu').classList.remove('active');
+        document.querySelector('.mobile-menu-btn').classList.remove('active');
+    }
+
+    function handleContactSubmit(event) {
+        event.preventDefault();
+        const firstName = document.getElementById('firstName').value;
+        const lastName  = document.getElementById('lastName').value;
+        if (firstName && lastName) {
+            showToast('Thank you, ' + firstName + ' ' + lastName + '! Your message has been sent successfully.');
+            closeModal('contactModal');
+            ['firstName','lastName','contactEmail','contactPhone','subject','message'].forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+        }
+    }
+
+    // =========================================================
+    // EVENT LISTENERS & INIT
+    // =========================================================
+    function initializeEventListeners() {
+        const usernameInput = document.getElementById('schoolUsername');
+        const passwordInput = document.getElementById('schoolPassword');
+        if (usernameInput) {
+            usernameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') passwordInput.focus();
+            });
+        }
+        if (passwordInput) {
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const form = document.querySelector('.school-login-form');
+                    if (form) form.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+
+        const scrollElements = document.querySelectorAll('.scroll-animate');
+        const scrollObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) { if (entry.isIntersecting) entry.target.classList.add('in-view'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
+        scrollElements.forEach(function(el) { scrollObserver.observe(el); });
+
+        document.querySelectorAll('.nav-menu a, .mobile-menu a').forEach(function(anchor) {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    const targetId = href.substring(1);
+                    if (targetId === 'home') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else if (targetId === 'schools') {
+                        const sec = document.getElementById('schools');
+                        if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const schoolLoginModal = document.getElementById('schoolLoginModal');
+                if (schoolLoginModal && schoolLoginModal.classList.contains('show')) { closeSchoolLoginModal(); return; }
+                const activeModal = document.querySelector('.modal[style*="block"]');
+                if (activeModal) { activeModal.style.display = 'none'; document.body.style.overflow = 'auto'; return; }
+                const loginModal = document.getElementById('loginModal');
+                if (loginModal && !loginModal.classList.contains('hidden')) closeLoginModal();
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            const userDropdown = document.getElementById('userDropdown');
+            const userDropdownContent = document.getElementById('userDropdownContent');
+            if (userDropdown && !userDropdown.contains(event.target)) userDropdownContent.classList.remove('show');
+
+            const mobileUserDropdown = document.getElementById('mobileUserDropdown');
+            const mobileUserDropdownContent = document.getElementById('mobileUserDropdownContent');
+            if (mobileUserDropdown && !mobileUserDropdown.contains(event.target)) mobileUserDropdownContent.classList.remove('show');
+
+            if (!event.target.matches('.filter-btn') && !event.target.closest('.filter-btn')) {
+                const dropdowns = document.getElementsByClassName('filter-dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) dropdowns[i].classList.remove('show');
+            }
+        });
+    }
+
+
+
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) { event.target.style.display = 'none'; document.body.style.overflow = 'auto'; }
+        else if (event.target.classList.contains('login-modal')) { closeLoginModal(); }
+        else if (event.target.classList.contains('school-login-modal')) { closeSchoolLoginModal(); }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initClientInfo();
+        checkExistingSession();
+        initializeEventListeners();
+        loadSchoolsFromSupabase();
+        loadAndApplySettings();
+    });
+
+    document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>

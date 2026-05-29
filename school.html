@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCHOOL DASHBOARD - UTOWN DATA NAME (CEEDO)</title>
+    <link rel="icon" type="image/x-icon" href="CEEDO.ico">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="school.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <!-- Firebase SDK removed — replaced with Supabase REST API in school.js -->
+</head>
+<body>
+    <!-- Session Loading Overlay -->
+    <div id="sessionLoadingOverlay" style="
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 64, 175, 0.94) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        backdrop-filter: blur(6px);
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    ">
+        <div style="text-align: center; color: #ffffff; pointer-events: none;">
+            <div style="
+                width: 60px;
+                height: 60px;
+                border: 4px solid rgba(255, 255, 255, 0.15);
+                border-top: 4px solid rgba(59, 130, 246, 0.9);
+                border-right: 4px solid rgba(59, 130, 246, 0.6);
+                border-radius: 50%;
+                margin: 0 auto 1.5rem;
+                animation: sessionSpinning 0.8s linear infinite;
+            "></div>
+            <p style="font-size: 1.15rem; font-weight: 600; margin: 0; letter-spacing: 0.3px;">Verifying Session</p>
+            <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.75rem;">Loading your dashboard...</p>
+        </div>
+    </div>
+
+    <style>
+        @keyframes sessionSpinning {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="nav-logos">
+                    <div class="nav-logo">
+                        <img src="CITY HALL LOGO.png" alt="City Hall Logo" class="nav-logo-img">
+                    </div>
+                    <div class="nav-logo">
+                        <img src="CEEDO NEW LOGO 2026.png" alt="CEEDO Logo" class="nav-logo-img">
+                    </div>
+                </div>
+                <div class="nav-site-name" id="navSiteName">UTOWN DATA NAME</div>
+            </div>
+
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a onclick="openAboutModal()">About Us</a></li>
+                <li><a onclick="openContactModal()">Contact Us</a></li>
+            </ul>
+
+            <button class="sign-in-btn hidden" onclick="handleSignIn()" id="signInButton">
+                <i class="fas fa-user"></i> SIGN IN
+            </button>
+
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-dropdown-btn" onclick="toggleUserDropdown()" id="userDropdownBtn">
+                    <i class="fas fa-user"></i>
+                    <span id="userDropdownText">Hello, School</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="user-dropdown-content" id="userDropdownContent">
+                    <div class="dropdown-item" onclick="showSection('school-profile')">
+                        <i class="fas fa-school"></i> School Profile
+                    </div>
+                    <div class="dropdown-item logout" onclick="openLogoutModal()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </div>
+                </div>
+            </div>
+
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+        <div class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><a href="index.html" onclick="closeMobileMenu()">Home</a></li>
+                <li><a onclick="openAboutModal(); closeMobileMenu()">About Us</a></li>
+                <li><a onclick="openContactModal(); closeMobileMenu()">Contact Us</a></li>
+            </ul>
+            <div class="mobile-sign-in">
+                <div class="user-dropdown" id="mobileUserDropdown">
+                    <button class="user-dropdown-btn" onclick="toggleMobileUserDropdown()">
+                        <i class="fas fa-user"></i>
+                        <span id="mobileUserDropdownText">Hello, School</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="user-dropdown-content" id="mobileUserDropdownContent">
+                        <div class="dropdown-item" onclick="showSection('school-profile'); closeMobileMenu()">
+                            <i class="fas fa-school"></i> School Profile
+                        </div>
+                        <div class="dropdown-item logout" onclick="openLogoutModal(); closeMobileMenu()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Us Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeModal('aboutModal')">&times;</span>
+                <div class="school-logo"><i class="fas fa-users"></i></div>
+                <h2>About UTOWN DATA NAME</h2>
+                <p class="modal-subtitle">Transforming Lives Through Quality Education</p>
+            </div>
+            <div class="modal-body">
+                <div class="about-content">
+                    <div class="about-mission">
+                        <h3><i class="fas fa-bullseye"></i> Our Mission</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    </div>
+                    <div class="about-values">
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-star"></i></div><h4>Excellence</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-lightbulb"></i></div><h4>Innovation</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-heart"></i></div><h4>Integrity</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                        <div class="value-card"><div class="value-icon"><i class="fas fa-globe"></i></div><h4>Global Perspective</h4><p>Lorem ipsum dolor sit amet.</p></div>
+                    </div>
+                    <div class="info-section">
+                        <h3 style="margin-bottom:1.5rem;color:var(--primary-blue);"><i class="fas fa-users-cog"></i> Leadership Team</h3>
+                        <div class="about-team">
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-user-tie"></i></div><h5>Ms. Tarra Ann M. Pagdanganan</h5><p class="role">City Government Assistant Department Head I</p></div>
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-chalkboard-teacher"></i></div><h5>Theresa Jane B. Mendoza</h5><p class="role">Development Management Officer II</p></div>
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-laptop"></i></div><h5>Zyrine B. Padilla</h5><p class="role">Development Management Officer I</p></div>
+                            <div class="team-member"><div class="team-avatar"><i class="fas fa-handshake"></i></div><h5>Ms. Reina G. Hernando</h5><p class="role">Education Research Assistant I</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Us Modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="closeModal('contactModal')">&times;</span>
+                <div class="school-logo"><i class="fas fa-envelope"></i></div>
+                <h2>Contact Us</h2>
+                <p class="modal-subtitle">Get in Touch - We're Here to Help</p>
+            </div>
+            <div class="modal-body">
+                <div class="contact-info">
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-phone"></i></div><h4>Call Us</h4><p>Office: +63 960 568 3438</p></div>
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-envelope"></i></div><h4>Email Us</h4><p id="contactAdminEmail">ceedo@cityofbalanga.gov.ph</p></div>
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div><h4>Visit Us</h4><p>2nd Floor Balanga City Hall<br>Balanga City, Bataan<br>Philippines</p></div>
+                    <div class="contact-card"><div class="contact-icon"><i class="fas fa-clock"></i></div><h4>Office Hours</h4><ul class="contact-hours-list"><li><strong>Monday - Thursday</strong> 8:00 AM - 6:30 PM</li><li class="closed">Friday: Closed</li><li class="closed">Saturday: Closed</li><li class="closed">Sunday: Closed</li></ul></div>
+                </div>
+                <div class="social-section">
+                    <h3><i class="fas fa-share-alt"></i> Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">
+                <i class="fas fa-school"></i>
+                School Panel
+            </h2>
+            <div id="sidebarSchoolName" class="sidebar-school-label"></div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="active" onclick="showSection('school-data')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('add-course')">
+                        <i class="fas fa-graduation-cap"></i>
+                        Add Courses
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('school-profile')">
+                        <i class="fas fa-id-card"></i>
+                        School Profile
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('activity-log')">
+                        <i class="fas fa-history"></i>
+                        Activity Log
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </li>
+            </ul>
+
+            <button class="logout-btn" onclick="openLogoutModal()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- School Data Analytics Section (Dashboard) -->
+            <div id="school-data" class="content-section active">
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        School Data Analytics
+                    </h2>
+
+<div class="filters-container">
+    <div class="school-filter-section">
+        <h3 class="school-filter-title"><i class="fas fa-school"></i> School</h3>
+        <!-- THIS SELECT IS NOW DISABLED - Only shows current logged-in school -->
+        <select class="school-filter-dropdown" id="schoolFilter" disabled>
+            <option id="schoolFilterOption">Loading school...</option>
+        </select>
+        <p style="font-size: 0.85rem; color: var(--text-gray); margin-top: 0.5rem;">
+            <i class="fas fa-lock"></i> Locked to your school account
+        </p>
+    </div>
+                        <div class="educational-filter-section">
+                            <h3 class="educational-filter-title"><i class="fas fa-graduation-cap"></i> Educational Attainment</h3>
+                            <select class="educational-filter-dropdown" id="educationalFilter" onchange="filterByEducationalAttainment()">
+                                <option value="all">N/A</option>
+                                <option value="bachelor">BACHELOR DEGREE</option>
+                                <option value="twoyear">2-YEAR COURSE</option>
+                                <option value="tesda">TESDA</option>
+                                <option value="graduate">GRADUATE COURSE</option>
+                            </select>
+                        </div>
+                        <div class="school-filter-section">
+                            <h3 class="school-filter-title"><i class="fas fa-filter"></i> Category</h3>
+                            <select class="school-filter-dropdown" id="categoryFilter" onchange="filterByCategory()">
+                                <option value="enrollees">N/A</option>
+                                <option value="outside">Outside Bataan</option>
+                                <option value="inside">Inside Bataan</option>
+                                <option value="graduates">Graduates</option>
+                                <option value="passers">Number of Board Passer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="year-management-section" id="yearManagementSection" style="display:none;">
+                        <h3 class="filter-title"><i class="fas fa-calendar-alt"></i> Year Management</h3>
+                        <div class="year-management-controls">
+                            <div class="add-year-form">
+                                <input type="text" id="newYearInput" placeholder="Enter new year (e.g., 2025-2026)" class="year-input">
+                                <button class="action-btn add" onclick="addNewYear()"><i class="fas fa-plus"></i> Add Year</button>
+                            </div>
+                            <div class="existing-years">
+                                <h4>Existing Years:</h4>
+                                <div class="years-list" id="yearsList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="summary-cards" id="summaryCards">
+                        <div class="summary-card"><h3 id="totalEnrollees">0</h3><p>Total Enrollees</p></div>
+                        <div class="summary-card"><h3 id="totalOutside">0</h3><p>Outside Bataan</p></div>
+                        <div class="summary-card"><h3 id="totalInside">0</h3><p>Inside Bataan</p></div>
+                        <div class="summary-card"><h3 id="totalGraduates">0</h3><p>Graduates</p></div>
+                        <div class="summary-card"><h3 id="totalPassers">0</h3><p>Board Passers</p></div>
+                    </div>
+
+                    <div class="unified-data-table-container">
+                        <div class="table-header">
+                            <div class="table-title"><i class="fas fa-table"></i> Student Enrollment Data by Gender</div>
+                            <div class="table-controls">
+                                <div style="display:flex;gap:0.5rem;align-items:center;">
+                                    <button class="btn btn-secondary btn-small" onclick="yearNavPrev()" title="Previous decade"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="btn btn-secondary btn-small" onclick="yearNavNext()" title="Next decade"><i class="fas fa-chevron-right"></i></button>
+                                    <button class="btn btn-secondary btn-small" onclick="exportTableData()"><i class="fas fa-download"></i> Export</button>
+                                    <button class="btn btn-primary btn-small" onclick="refreshTableData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="yearNavigator" class="year-navigator"></div>
+                        <div class="table-wrapper">
+                            <table class="unified-data-table" id="unifiedDataTable">
+                                <thead>
+                                    <tr id="mainHeaderRow">
+                                        <th rowspan="2">
+                                            <input type="checkbox" id="selectAllCourses" onchange="toggleSelectAllCourses()" class="course-checkbox">
+                                            Course Name
+                                        </th>
+                                    </tr>
+                                    <tr id="subHeaderRow"></tr>
+                                </thead>
+                                <tbody id="unifiedTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="saveData(event)"><i class="fas fa-save"></i> Save Changes</button>
+                        <button class="btn btn-danger" onclick="deleteSelectedCourses()"><i class="fas fa-trash"></i> Delete Selected</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Courses Section -->
+            <div id="add-course" class="content-section">
+                <div class="section-card">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                        <h2 class="section-title" style="margin-bottom:0;">
+                            <i class="fas fa-graduation-cap"></i> Add Courses
+                        </h2>
+                        <button class="btn btn-primary" onclick="openAddCourseModal()">
+                            <i class="fas fa-plus"></i> Add New Course
+                        </button>
+                    </div>
+
+                    <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;">
+                        <select id="clEduFilter" class="form-input" style="max-width:220px;" onchange="clFilterCourses()">
+                            <option value="all">All Educational Attainment</option>
+                            <option value="BACHELOR DEGREE">BACHELOR DEGREE</option>
+                            <option value="2-YEAR COURSE">2-YEAR COURSE</option>
+                            <option value="TESDA">TESDA</option>
+                            <option value="GRADUATE COURSE">GRADUATE COURSE</option>
+                        </select>
+                        <input type="text" id="clSearchInput" class="form-input" style="flex:1;min-width:200px;" placeholder="Search by course name..." oninput="clFilterCourses()">
+                    </div>
+
+                    <div class="data-table-container" style="margin-bottom:1rem;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Course Name</th>
+                                    <th>School</th>
+                                    <th>Educational Level</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+                        <div style="color:var(--text-gray);font-size:0.9rem;" id="clPageInfo">No courses yet</div>
+                        <div style="display:flex;gap:0.5rem;align-items:center;">
+                            <button class="btn btn-secondary btn-small" onclick="clPrevPage()" id="clPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                            <span id="clPageIndicator" style="padding:0.5rem 1rem;background:var(--light-blue);border-radius:8px;font-weight:600;font-size:0.9rem;">Page 1</span>
+                            <button class="btn btn-secondary btn-small" onclick="clNextPage()" id="clNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- School Profile Section -->
+            <div id="school-profile" class="content-section">
+                <div class="section-card">
+                    <h2 class="section-title">
+                        <i class="fas fa-id-card"></i>
+                        School Profile
+                    </h2>
+
+                    <div style="background:var(--gradient-primary);border-radius:16px;padding:2rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+                        <div style="width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:#fff;flex-shrink:0;">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div>
+                            <div id="profileSchoolName" style="font-size:1.5rem;font-weight:700;color:#fff;">—</div>
+                            <div id="profileSchoolAbbrev" style="font-size:1rem;color:rgba(255,255,255,0.8);margin-top:0.25rem;">—</div>
+                        </div>
+                        <div style="margin-left:auto;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                            <button id="editProfileBtn" class="btn" style="background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.4);backdrop-filter:blur(8px);" onclick="enableProfileEdit()">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </button>
+                            <button id="saveProfileBtn" class="btn" style="display:none;background:#fff;color:var(--primary-blue);font-weight:700;" onclick="saveSchoolProfile()">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <button id="cancelProfileBtn" class="btn" style="display:none;background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.4);" onclick="cancelProfileEdit()">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-school" style="color:var(--primary-blue);margin-right:0.4rem;"></i> School Name</label>
+                            <input type="text" id="profSchoolName" class="form-input" placeholder="School name" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-tag" style="color:var(--primary-blue);margin-right:0.4rem;"></i> School Abbreviation</label>
+                            <input type="text" id="profSchoolAbbrev" class="form-input" placeholder="Abbreviation (e.g., BSIT)" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-user-tie" style="color:var(--primary-blue);margin-right:0.4rem;"></i> School President / Head</label>
+                            <input type="text" id="profSchoolPres" class="form-input" placeholder="School president or head" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-map-marker-alt" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Address</label>
+                            <input type="text" id="profAddress" class="form-input" placeholder="School address" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-envelope" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Email Address</label>
+                            <input type="text" id="profEmail" class="form-input" placeholder="Email address" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-phone" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Contact Number</label>
+                            <input type="text" id="profPhone" class="form-input" placeholder="Contact number" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-phone-alt" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Landline</label>
+                            <input type="text" id="profLandline" class="form-input" placeholder="Landline number" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-globe" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Website</label>
+                            <input type="url" id="profWebsite" class="form-input" placeholder="https://example.com" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-chalkboard-teacher" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Teaching Staff</label>
+                            <input type="number" id="profTeachingStaff" class="form-input" placeholder="0" min="0" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-users" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Non-Teaching Staff</label>
+                            <input type="number" id="profNonTeachingStaff" class="form-input" placeholder="0" min="0" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-user" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Username</label>
+                            <input type="text" id="profUsername" class="form-input" placeholder="Username" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-lock" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Password</label>
+                            <div style="position:relative;">
+                                <input type="password" id="profPassword" class="form-input" placeholder="Password" disabled>
+                                <button type="button" class="password-eye-btn" onclick="toggleInputPassword('profPassword',this)" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1;">
+                            <label class="form-label"><i class="fas fa-align-left" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Description</label>
+                            <textarea id="profDescription" class="form-input" rows="4" placeholder="School description..." disabled style="resize:vertical;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Log Section -->
+            <div id="activity-log" class="content-section">
+                <div class="section-card">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                        <h2 class="section-title" style="margin-bottom:0;"><i class="fas fa-history"></i> Activity Log</h2>
+                        <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+                            <span id="alTotalBadge" style="background:var(--light-blue);color:var(--primary-blue);padding:4px 12px;border-radius:20px;font-size:0.82rem;font-weight:600;"></span>
+                            <button id="alRefreshBtn" class="btn btn-secondary btn-small" onclick="initActivityLog()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;">
+                        <div style="position:relative;flex:1;min-width:200px;">
+                            <input type="text" id="alSearchInput" class="form-input" placeholder="Search activity log..." oninput="onActivityLogFilter()" style="padding-right:2.5rem;">
+                            <button id="alSearchClear" style="display:none;position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-gray);" onclick="clearActivityLogSearch()"><i class="fas fa-times"></i></button>
+                        </div>
+                        <select id="alUsernameFilter" class="form-input" style="max-width:200px;" onchange="onActivityLogFilter()">
+                            <option value="">All Users</option>
+                        </select>
+                    </div>
+
+                    <div id="alActiveFilters" style="display:none;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;"></div>
+
+                    <div id="alStatsRow" style="display:none;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+                        <span id="alStatShowing" style="color:var(--text-gray);font-size:0.9rem;"></span>
+                        <span id="alStatToday" style="color:var(--text-gray);font-size:0.9rem;"></span>
+                        <span id="alStatUniqueUsers" style="color:var(--text-gray);font-size:0.9rem;"></span>
+                    </div>
+
+                    <div id="alLoading" style="display:flex;flex-direction:column;align-items:center;gap:1rem;padding:3rem;"><div style="width:40px;height:40px;border:4px solid #e2e8f0;border-top-color:var(--primary-blue);border-radius:50%;animation:spin 0.9s linear infinite;"></div><p>Loading activity log...</p></div>
+                    <div id="alError" style="display:none;flex-direction:column;align-items:center;gap:1rem;padding:3rem;color:#dc2626;"><i class="fas fa-exclamation-triangle" style="font-size:2rem;"></i><p id="alErrorMsg">Failed to load activity logs.</p></div>
+                    <div id="alEmpty" style="display:none;flex-direction:column;align-items:center;gap:1rem;padding:3rem;color:var(--text-gray);"><i class="fas fa-history" style="font-size:2rem;"></i><p>No activity logs found.</p></div>
+
+                    <div id="alTableWrap" style="display:none;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th><button onclick="toggleActivityLogSort()" style="background:none;border:none;cursor:pointer;font-weight:600;color:inherit;display:flex;align-items:center;gap:0.4rem;">Date &amp; Time <span id="alSortIcon"><i class="fas fa-sort-down"></i></span></button></th>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Description</th>
+                                    <th>Location</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="alPagination" style="display:none;justify-content:center;align-items:center;gap:0.5rem;margin-top:1.5rem;flex-wrap:wrap;">
+                        <button id="alFirstBtn" class="btn btn-secondary btn-small" onclick="goToActivityLogPage(1)"><i class="fas fa-angle-double-left"></i></button>
+                        <button id="alPrevBtn" class="btn btn-secondary btn-small" onclick="prevActivityLogPage()"><i class="fas fa-angle-left"></i></button>
+                        <div id="alPageNumbers" style="display:flex;gap:0.25rem;"></div>
+                        <button id="alNextBtn" class="btn btn-secondary btn-small" onclick="nextActivityLogPage()"><i class="fas fa-angle-right"></i></button>
+                        <button id="alLastBtn" class="btn btn-secondary btn-small" onclick="goToActivityLogPage(null)"><i class="fas fa-angle-double-right"></i></button>
+                        <span id="alPageInfo" style="color:var(--text-gray);font-size:0.9rem;padding:0 0.5rem;"></span>
+                        <select id="alPerPage" class="form-input" style="width:auto;padding:0.4rem 0.75rem;" onchange="onActivityLogPerPageChange()">
+                            <option value="10">10/page</option>
+                            <option value="25">25/page</option>
+                            <option value="50">50/page</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="settings" class="content-section">
+                <div class="section-card">
+                    <h2 class="section-title"><i class="fas fa-cog"></i> Settings</h2>
+
+                    <div class="form-group" style="max-width:400px;margin-bottom:1.5rem;">
+                        <label class="form-label"><i class="fas fa-clock" style="color:var(--primary-blue);margin-right:0.4rem;"></i> Backup Frequency</label>
+                        <select id="schoolBackupFreq" class="form-input">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSchoolSettings()"><i class="fas fa-save"></i> Save Settings</button>
+
+                    <hr style="margin:2rem 0;border:none;border-top:1px solid var(--neutral-200);">
+
+                    <hr style="margin:2rem 0;border:none;border-top:1px solid var(--neutral-200);">
+
+                    <h3 style="margin-bottom:1rem;color:var(--primary-blue);"><i class="fas fa-download"></i> Download School Data</h3>
+                    <p style="color:var(--text-gray);margin-bottom:1rem;font-size:0.95rem;">Export a complete MySQL backup of your school's courses and enrollment data as a <strong>.sql</strong> file — ready to import into any MySQL database.</p>
+                    <button class="btn btn-primary" onclick="downloadSchoolBackup()" id="backupDownloadBtn"><i class="fas fa-database"></i> Download MySQL Backup (.sql)</button>
+
+                    <hr style="margin:2rem 0;border:none;border-top:1px solid var(--neutral-200);">
+
+                    <h3 style="margin-bottom:1rem;color:var(--primary-blue);"><i class="fas fa-flag"></i> Report a Problem</h3>
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;padding:0.85rem 1.25rem;background:var(--light-blue);border-radius:10px;max-width:600px;">
+                        <i class="fas fa-phone" style="color:var(--primary-blue);font-size:1.1rem;flex-shrink:0;"></i>
+                        <span style="color:var(--text-dark);font-size:0.95rem;">Or call us directly: <strong><a href="tel:09605683438" style="color:var(--primary-blue);text-decoration:none;">0960 568 3438</a></strong></span>
+                    </div>
+                    <div class="form-group" style="max-width:600px;">
+                        <label class="form-label"><i class="fas fa-phone" style="color:var(--primary-blue);margin-right:0.3rem;"></i> Your Contact Number <span style="color:var(--danger-red);">*</span></label>
+                        <input type="tel" id="reportProblemPhone" class="form-input" placeholder="e.g. 09XX XXX XXXX" required maxlength="20">
+                    </div>
+                    <div class="form-group" style="max-width:600px;">
+                        <label class="form-label">Describe the problem <span style="color:var(--danger-red);">*</span></label>
+                        <textarea id="reportProblemText" class="form-input" rows="5" placeholder="Describe the problem you are experiencing..."></textarea>
+                    </div>
+                    <button class="btn btn-warning" onclick="submitProblemReport()"><i class="fas fa-paper-plane"></i> Submit Report</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Add Course Modal -->
+    <div id="addCourseModal" class="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;align-items:center;justify-content:center;">
+        <div class="modal-content" style="max-width:500px;width:95%;border-radius:20px;">
+            <div class="modal-header">
+                <span class="close" onclick="closeAddCourseModal()">&times;</span>
+                <div class="school-logo"><i class="fas fa-graduation-cap"></i></div>
+                <h2>Add New Course</h2>
+                <p class="modal-subtitle">Add a course for this school</p>
+            </div>
+            <div class="modal-body">
+                <form id="sidebarAddCourseForm" onsubmit="submitAddCourseModal(event)">
+                    <div class="form-group">
+                        <label class="form-label">School</label>
+                        <input type="text" id="modalCourseSchoolDisplay" class="form-input" disabled>
+                        <input type="hidden" id="modalCourseSchool">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Educational Attainment</label>
+                        <select id="modalEduAttainment" class="form-input" required>
+                            <option value="">-- Select --</option>
+                            <option value="BACHELOR DEGREE">BACHELOR DEGREE</option>
+                            <option value="2-YEAR COURSE">2-YEAR COURSE</option>
+                            <option value="TESDA">TESDA</option>
+                            <option value="GRADUATE COURSE">GRADUATE COURSE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Course Name</label>
+                        <input type="text" id="modalCourseName" class="form-input" placeholder="e.g., BS Computer Science" required>
+                    </div>
+                    <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddCourseModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Course</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div id="editCourseModal" class="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000;align-items:center;justify-content:center;">
+        <div class="modal-content" style="max-width:480px;width:95%;border-radius:20px;">
+            <div class="modal-header">
+                <span class="close" onclick="closeEditCourseModal()">&times;</span>
+                <div class="school-logo"><i class="fas fa-edit"></i></div>
+                <h2>Edit Course</h2>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editCourseDocId">
+                <div class="form-group">
+                    <label class="form-label">Course Name</label>
+                    <input type="text" id="editCourseName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Educational Attainment</label>
+                    <select id="editCourseEdu" class="form-input" required>
+                        <option value="">-- Select --</option>
+                        <option value="BACHELOR DEGREE">BACHELOR DEGREE</option>
+                        <option value="2-YEAR COURSE">2-YEAR COURSE</option>
+                        <option value="TESDA">TESDA</option>
+                        <option value="GRADUATE COURSE">GRADUATE COURSE</option>
+                    </select>
+                </div>
+                <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditCourseModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEditCourse()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content" style="max-width:420px;">
+            <div class="modal-header">
+                <h2 id="dcmTitle">Confirm Delete</h2>
+            </div>
+            <div class="modal-body">
+                <p id="dcmMsg" style="margin-bottom:1.5rem;color:var(--text-dark);line-height:1.6;"></p>
+                <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="closeDeleteConfirm()">Cancel</button>
+                    <button class="btn btn-danger" onclick="confirmDeleteAction()"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirm Modal -->
+    <div id="logoutConfirmModal" class="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-sign-out-alt"></i> Confirm Logout</h2>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:1.5rem;">Are you sure you want to logout?</p>
+                <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="closeLogoutModal()">Cancel</button>
+                    <button class="btn btn-danger" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:99999;display:flex;flex-direction:column;gap:0.5rem;"></div>
+
+    <!-- Dashboard loading overlay -->
+    <div id="dashboardLoadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,0.7);z-index:8000;align-items:center;justify-content:center;flex-direction:column;gap:1rem;">
+        <div style="width:48px;height:48px;border:4px solid #e2e8f0;border-top-color:var(--primary-blue);border-radius:50%;animation:spin 0.9s linear infinite;"></div>
+        <p style="font-weight:600;color:var(--primary-blue);">Loading data...</p>
+    </div>
+
+    <script src="school.js"></script>
+</body>
+</html>

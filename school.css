@@ -3309,3 +3309,15 @@
     animation: rowHighlight 1s ease-out;
 }
 
+
+/* ── Logout Loading Overlay ─────────────────────────────────────── */
+#logoutLoadingOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(185, 28, 28, 0.92) 100%);
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    backdrop-filter: blur(6px);
+}

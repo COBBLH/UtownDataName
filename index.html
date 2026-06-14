@@ -253,9 +253,23 @@
         @media(max-width:1024px){.footer-main{grid-template-columns:1fr;gap:2rem}.about-values{grid-template-columns:1fr 1fr}.contact-info{grid-template-columns:repeat(2,minmax(0,1fr))}.form-row{grid-template-columns:1fr}}
         @media(max-width:768px){.nav-menu{display:none}.mobile-menu-btn{display:flex}.header h1{font-size:1.8rem}.schools-grid{grid-template-columns:1fr}.modal-content{width:95%;margin:5% auto}.about-team{grid-template-columns:repeat(2,minmax(0,1fr))}.footer-stats{grid-template-columns:1fr 1fr}.contact-info{grid-template-columns:1fr}.about-values{grid-template-columns:1fr}.footer-bottom{flex-direction:column;text-align:center}.info-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:1fr}}
         @media(max-width:480px){.header h1{font-size:1.4rem}.about-team{grid-template-columns:1fr}}
+        /* ─── Offline Banner ─────────────────────────────────── */
+        .offline-banner{display:none;background:linear-gradient(90deg,#92400e,#b45309);color:#fff;padding:.75rem 1.5rem;text-align:center;font-size:.92rem;font-weight:600;position:sticky;top:80px;z-index:999;gap:.6rem;align-items:center;justify-content:center;flex-wrap:wrap}
+        .offline-banner.show{display:flex}
+        .offline-banner i{font-size:1rem}
+        .offline-banner a{color:#fde68a;text-decoration:underline;cursor:pointer;white-space:nowrap}
+        .offline-banner .banner-close{margin-left:.75rem;background:rgba(255,255,255,.2);border:none;color:#fff;cursor:pointer;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;transition:var(--transition)}
+        .offline-banner .banner-close:hover{background:rgba(255,255,255,.35)}
     </style>
 </head>
 <body>
+    <!-- Offline / File-Protocol Banner -->
+    <div class="offline-banner" id="offlineBanner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Database unavailable — open this file via a <strong>local web server</strong> (e.g. VS Code Live Server) for full functionality.</span>
+        <button class="banner-close" onclick="document.getElementById('offlineBanner').classList.remove('show')" aria-label="Dismiss">&times;</button>
+    </div>
+
     <!-- Navigation Header -->
     <nav class="nav-header">
         <div class="nav-container">
@@ -582,7 +596,7 @@
     // =========================================================
     // SUPABASE REST API HELPERS
     // =========================================================
-    const SUPABASE_URL = 'https://bbbaawqqgjzrbadmvpwu.supabase.co/rest/v1/';
+    const SUPABASE_URL = 'https://bbbaawqqgjzrbadmvpwu.supabase.co/rest/v1';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiYmFhd3FxZ2p6cmJhZG12cHd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxOTkwMzMsImV4cCI6MjA5NDc3NTAzM30.jlqT2BfghVM7h20Oqb8MAu-eiIAQ2kthB_jlMXe-dYQ';
 
     const SB_HDRS = {
@@ -592,21 +606,47 @@
         'Prefer': 'return=representation'
     };
 
+    // ─── Network-safe fetch wrapper ───────────────────────────
+    // Resolves to null on any network error (ERR_NAME_NOT_RESOLVED,
+    // CORS block when opened via file://, timeout, etc.)
+    async function sbFetch(url, options, timeoutMs) {
+        timeoutMs = timeoutMs || 10000;
+        const controller = new AbortController();
+        const timer = setTimeout(function() { controller.abort(); }, timeoutMs);
+        try {
+            const res = await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+            clearTimeout(timer);
+            return res;
+        } catch (err) {
+            clearTimeout(timer);
+            // Re-throw as a typed network error so callers can distinguish it
+            const netErr = new Error('NETWORK_ERROR: ' + err.message);
+            netErr.isNetworkError = true;
+            throw netErr;
+        }
+    }
+
     async function sbGet(table, query) {
-        const url = query ? `${SUPABASE_URL}/${table}?${query}` : `${SUPABASE_URL}/${table}`;
-        const res = await fetch(url, { headers: SB_HDRS });
+        const url = query ? (SUPABASE_URL + '/' + table + '?' + query) : (SUPABASE_URL + '/' + table);
+        const res = await sbFetch(url, { headers: SB_HDRS });
         if (!res.ok) throw new Error(await res.text());
         return res.json();
     }
 
     async function sbInsert(table, data) {
-        const res = await fetch(`${SUPABASE_URL}/${table}`, {
-            method: 'POST',
-            headers: SB_HDRS,
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) throw new Error(await res.text());
-        return res.json();
+        try {
+            const res = await sbFetch(SUPABASE_URL + '/' + table, {
+                method: 'POST',
+                headers: SB_HDRS,
+                body: JSON.stringify(data)
+            });
+            if (!res.ok) throw new Error(await res.text());
+            return res.json();
+        } catch (err) {
+            // Activity log failures are non-critical — swallow silently
+            if (err.isNetworkError) return null;
+            throw err;
+        }
     }
 
     // =========================================================
@@ -620,11 +660,14 @@
 
     async function initClientInfo() {
         try {
-            const res = await fetch('https://api.ipify.org?format=json');
+            const controller = new AbortController();
+            const timer = setTimeout(function() { controller.abort(); }, 5000);
+            const res = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+            clearTimeout(timer);
             const data = await res.json();
             clientInfo.ipAddress = data.ip || 'Unknown';
         } catch (e) { clientInfo.ipAddress = 'Unknown'; }
-        clientInfo.pcName = navigator.platform || navigator.userAgentData?.platform || 'Unknown Device';
+        clientInfo.pcName = navigator.platform || (navigator.userAgentData && navigator.userAgentData.platform) || 'Unknown Device';
     }
 
     // =========================================================
@@ -685,7 +728,22 @@
             renderSchoolCards(allSchools);
         } catch (err) {
             console.error('Error loading schools:', err);
-            grid.innerHTML = '<div class="schools-empty"><i class="fas fa-exclamation-triangle"></i><p>Failed to load schools. Please refresh the page.</p></div>';
+            const isNetwork = err.isNetworkError || (err.message && err.message.indexOf('NETWORK_ERROR') !== -1);
+            if (isNetwork) {
+                showOfflineBanner();
+                grid.innerHTML =
+                    '<div class="schools-empty">' +
+                        '<i class="fas fa-wifi" style="font-size:3rem;color:#f59e0b;"></i>' +
+                        '<p style="font-weight:700;color:#92400e;margin-top:.5rem;">Cannot reach the database</p>' +
+                        '<p style="font-size:.9rem;color:var(--text-light);max-width:480px;line-height:1.6;">' +
+                            'This page must be served over HTTP to connect to Supabase. ' +
+                            'Please open it using a local web server (VS Code Live Server, XAMPP, Python http.server, etc.) ' +
+                            'rather than directly from the file system.' +
+                        '</p>' +
+                    '</div>';
+            } else {
+                grid.innerHTML = '<div class="schools-empty"><i class="fas fa-exclamation-triangle"></i><p>Failed to load schools. Please refresh the page.</p></div>';
+            }
         }
     }
 
@@ -701,7 +759,10 @@
                 if (navEl) navEl.textContent = s.SystemName;
                 document.title = s.SystemName;
             }
-        } catch (e) { console.error('loadAndApplySettings error:', e); }
+        } catch (e) {
+            // Settings are non-critical — silently swallow network errors
+            if (!e.isNetworkError) console.error('loadAndApplySettings error:', e);
+        }
     }
 
     // =========================================================
@@ -1231,6 +1292,23 @@ function handleDashboard() {
         loadSchoolsFromSupabase();
         loadAndApplySettings();
     });
+
+    // =========================================================
+    // OFFLINE BANNER
+    // =========================================================
+    function showOfflineBanner() {
+        var banner = document.getElementById('offlineBanner');
+        if (banner) banner.classList.add('show');
+    }
+
+    // Auto-detect file:// protocol and show banner immediately
+    (function() {
+        if (window.location.protocol === 'file:') {
+            document.addEventListener('DOMContentLoaded', function() {
+                showOfflineBanner();
+            });
+        }
+    })();
 
     document.documentElement.style.scrollBehavior = 'smooth';
     </script>

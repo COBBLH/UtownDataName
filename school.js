@@ -393,6 +393,14 @@ function closeLogoutModal() {
 }
 async function confirmLogout() {
     closeLogoutModal();
+
+    // Show logout loading animation
+    var logoutOverlay = document.getElementById('logoutLoadingOverlay');
+    if (logoutOverlay) {
+        logoutOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
     const schoolDoc = currentSchoolDoc || {};
     await saveActivityLog(schoolDoc.username + ' has logged out of school portal', 'school.html');
     localStorage.removeItem('schoolLoginData');
@@ -570,7 +578,7 @@ async function loadSummaryStatsFromFirestore() {
         return;
     }
 
-    var eduMap = { bachelor: 'BACHELOR DEGREE', twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
+    var eduMap = { bachelor: "BACHELOR'S DEGREE", twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
     var targetEdu = eduMap[currentEducationalLevel];
     if (!targetEdu) { zeroOutSummaryStats(); return; }
 
@@ -663,7 +671,7 @@ async function filterByEducationalAttainment() {
     // ==========================================
     if (sectionTitle) {
         if (currentEducationalLevel === 'all') {
-            sectionTitle.innerHTML = '<i class="fas fa-chart-bar"></i> ' + schoolName + ' - Select Educational Attainment';
+            sectionTitle.innerHTML = '<i class="fas fa-chart-bar"></i> ' + schoolName + ' - Select Courses';
         } else {
             sectionTitle.innerHTML = '<i class="fas fa-chart-bar"></i> ' + schoolName + ' | ' + eduName;
         }
@@ -685,7 +693,7 @@ async function filterByEducationalAttainment() {
         // Log the action
         await saveActivityLog(
             (currentSchoolDoc ? currentSchoolDoc.username : 'school') + 
-            ' filtered data by educational attainment: ' + eduName, 
+            ' filtered data by courses: ' + eduName, 
             'school.html'
         );
     } else {
@@ -723,7 +731,7 @@ async function setupDataAnalyticsFetch() {
         let qs = 'DA_SchoolID=eq.' + encodeURIComponent(currentSchool);
         
         // IMPORTANT: Only add educational attainment filter if not 'all'
-        const eduMap = { bachelor: 'BACHELOR DEGREE', twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
+        const eduMap = { bachelor: "BACHELOR'S DEGREE", twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
         const targetEdu = eduMap[currentEducationalLevel];
         if (targetEdu) {
             qs += '&DA_EducationalAttainment=eq.' + encodeURIComponent(targetEdu);
@@ -805,7 +813,7 @@ function updateTableFromSupabaseRows(rows) {
         schoolsData[targetKey][catKey][courseName][yearIndex] = { male: male, female: female };
     });
 
-    var _eduMap = { bachelor: 'BACHELOR DEGREE', twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
+    var _eduMap = { bachelor: "BACHELOR'S DEGREE", twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
     var _targetEduLabel = _eduMap[currentEducationalLevel];
 
     courseList.forEach(function(c) {
@@ -868,7 +876,7 @@ function updateUnifiedTable() {
     if (currentEducationalLevel === 'all') {
         coursesToShow = [];
     } else {
-        var eduMap = { bachelor: 'BACHELOR DEGREE', twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
+        var eduMap = { bachelor: "BACHELOR'S DEGREE", twoyear: '2-YEAR COURSE', tesda: 'TESDA', graduate: 'GRADUATE COURSE' };
         var targetEduLabel = eduMap[currentEducationalLevel];
 
         var filtered = courseList.filter(function(c) {
@@ -1078,7 +1086,7 @@ function saveData(event) {
     const originalText = saveBtn ? saveBtn.innerHTML : '';
 
     if (currentEducationalLevel === 'all') {
-        showToast('Please select a specific Educational Attainment before saving.', 'error');
+        showToast('Please select a specific Courses before saving.', 'error');
         return;
     }
     if (currentFilter === 'enrollees' && document.getElementById('categoryFilter').value === 'enrollees') {
@@ -1105,10 +1113,10 @@ function saveData(event) {
 async function saveAllDataToSupabase() {
     const catVal = document.getElementById('categoryFilter').value;
     if (catVal === 'enrollees') throw new Error('Please choose a category before saving.');
-    if (currentEducationalLevel === 'all') throw new Error('Please select an Educational Attainment before saving.');
+    if (currentEducationalLevel === 'all') throw new Error('Please select a Courses before saving.');
     const data = schoolsData[currentSchool] && schoolsData[currentSchool][currentFilter] ? schoolsData[currentSchool][currentFilter] : {};
     const categoryMap = { enrollees:'N/A', outside:'OutsideBataan', inside:'InsideBataan', graduates:'Graduates', passers:'NumberofBoardPasser' };
-    const eduMap = { bachelor:'BACHELOR DEGREE', twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
+    const eduMap = { bachelor:"BACHELOR'S DEGREE", twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
     const category = categoryMap[catVal] || 'N/A';
     const educationalAttainment = eduMap[currentEducationalLevel] || 'N/A';
     // BUG FIX 2: Run saves sequentially (not parallel with Promise.all).
@@ -1256,7 +1264,7 @@ async function loadCoursesFromSupabase() {
     console.log('📚 Loading courses for:', cacheKey);
 
     try {
-        const eduMap = { bachelor:'BACHELOR DEGREE', twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
+        const eduMap = { bachelor:"BACHELOR'S DEGREE", twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
         const targetEduLabel = eduMap[currentEducationalLevel];
 
         if (_clCoursesLoaded && clAllCourses.length) {
@@ -1931,7 +1939,7 @@ function exportTableData() {
 
     ws.addRow(['School: ' + schoolLabel]);
     ws.mergeCells(1, 1, 1, totalCols);
-    ws.addRow(['Educational Attainment: ' + eduLabel + '   |   Category: ' + catLabel]);
+    ws.addRow(['Courses: ' + eduLabel + '   |   Category: ' + catLabel]);
     ws.mergeCells(2, 1, 2, totalCols);
     var yearHeaderRow = ['Course'];
     exportYears.forEach(function(y) { yearHeaderRow.push(y, '', ''); });
@@ -2088,24 +2096,51 @@ async function downloadSchoolBackup() {
 
         lines.push('SET FOREIGN_KEY_CHECKS = 1;');
 
-        // ── Download as .sql file ─────────────────────────────────────
+        // ── Download as password-protected .zip containing .sql ─────
         var sqlContent = lines.join('\n');
         var fileDateStr = now.getFullYear() + '' + pad(now.getMonth()+1) + '' + pad(now.getDate());
         var fileTimeStr = pad(now.getHours()) + '' + pad(now.getMinutes()) + '' + pad(now.getSeconds());
         var safeSchool = schoolName.replace(/[^a-zA-Z0-9]/g, '');
-        var filename = 'SchoolBackup_' + safeSchool + '_' + fileDateStr + '_' + fileTimeStr + '.sql';
+        var sqlFilename = 'SchoolBackup_' + safeSchool + '_' + fileDateStr + '_' + fileTimeStr + '.sql';
+        var zipFilename = 'SchoolBackup_' + safeSchool + '_' + fileDateStr + '_' + fileTimeStr + '.zip';
 
-        var blob = new Blob([sqlContent], { type: 'application/sql' });
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
+        // Get the login password to use as ZIP encryption key
+        var zipPassword = '';
+        if (currentSchoolDoc && currentSchoolDoc.password) {
+            zipPassword = String(currentSchoolDoc.password);
+        } else if (schoolSession && schoolSession.password) {
+            zipPassword = String(schoolSession.password);
+        }
 
-        showToast('MySQL backup downloaded: ' + filename, 'success');
-        saveActivityLog((currentSchoolDoc ? currentSchoolDoc.username : 'school') + ' downloaded MySQL backup.', 'school.html');
+        if (zipPassword && typeof zip !== 'undefined' && zip.ZipWriter) {
+            var zipWriter = new zip.ZipWriter(
+                new zip.BlobWriter('application/zip'),
+                { password: zipPassword, encryptionStrength: 3 }
+            );
+            await zipWriter.add(sqlFilename, new zip.TextReader(sqlContent));
+            var zipBlob = await zipWriter.close();
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(zipBlob);
+            a.download = zipFilename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            showToast('Encrypted ZIP downloaded. Use your login password to open it.', 'success');
+            saveActivityLog((currentSchoolDoc ? currentSchoolDoc.username : 'school') + ' downloaded encrypted MySQL backup.', 'school.html');
+        } else {
+            // Fallback: no password on account or zip.js unavailable - plain .sql
+            var blob = new Blob([sqlContent], { type: 'application/sql' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = sqlFilename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            showToast('MySQL backup downloaded: ' + sqlFilename, 'success');
+            saveActivityLog((currentSchoolDoc ? currentSchoolDoc.username : 'school') + ' downloaded MySQL backup.', 'school.html');
+        }
     } catch (e) {
         console.error('downloadSchoolBackup error:', e);
         showToast('Error downloading backup: ' + (e.message || 'Unknown error'), 'error');

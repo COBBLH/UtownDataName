@@ -438,16 +438,21 @@ function openLogoutModal() { document.getElementById('logoutConfirmModal').style
 function closeLogoutModal() { document.getElementById('logoutConfirmModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
 function confirmLogout() {
     closeLogoutModal();
+
+    // Show logout loading animation
+    var logoutOverlay = document.getElementById('logoutLoadingOverlay');
+    if (logoutOverlay) {
+        logoutOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
     currentUser = null;
     localStorage.removeItem('utownUser');
     sessionStorage.removeItem('redirectAfterLogin');
-    
-    // Log the logout action before redirecting
+
     logActivity('Logged out from admin dashboard', 'Admin Dashboard').then(function() {
-        // Redirect to home page
         window.location.href = 'index.html?loggedOut=true';
     }).catch(function() {
-        // If logging fails, still redirect
         window.location.href = 'index.html?loggedOut=true';
     });
 }
@@ -671,7 +676,7 @@ function loadSummaryStatsFromFirestore() {
         document.getElementById('totalEnrollees').textContent = (c.outside + c.inside + c.graduates + c.passers).toLocaleString();
         return;
     }
-    var eduMap = { bachelor:'BACHELOR DEGREE', twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
+    var eduMap = { bachelor:"BACHELOR'S DEGREE", twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
     var targetEdu = eduMap[currentEducationalLevel];
     if (!targetEdu) return;
     var categorySupabaseMap = {
@@ -755,9 +760,9 @@ async function filterByEducationalAttainment() {
     await loadDataFromSupabase();
     loadSummaryStatsFromFirestore();
     var eduName = educationalFilter.options[educationalFilter.selectedIndex].text;
-    activities.unshift({ type:'edit', title:'Educational Filter Applied', description:'Data filtered by educational attainment: ' + eduName, time:'Just now' });
+    activities.unshift({ type:'edit', title:'Educational Filter Applied', description:'Data filtered by courses: ' + eduName, time:'Just now' });
     updateActivityLog();
-    saveActivityLog((currentUser ? currentUser.username : 'SuperAdmin') + ' filtered data by educational attainment: ' + eduName, 'superadmin.html');
+    saveActivityLog((currentUser ? currentUser.username : 'SuperAdmin') + ' filtered data by courses: ' + eduName, 'superadmin.html');
 }
 
 async function filterByCategory() {
@@ -781,7 +786,7 @@ async function loadCoursesFromSupabase() {
     var cacheKey = currentSchool + '_' + currentEducationalLevel;
     if (_courseLoadCache[cacheKey]) { updateUnifiedTable(); return; }
 
-    var eduMap = { bachelor:'BACHELOR DEGREE', twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
+    var eduMap = { bachelor:"BACHELOR'S DEGREE", twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
     var targetEduLabel = eduMap[currentEducationalLevel];
 
     try {
@@ -832,7 +837,7 @@ async function loadDataFromSupabase() {
     var cacheKey = currentSchool + '_' + currentEducationalLevel + '_' + currentFilter;
     if (_dataLoadCache[cacheKey]) { updateUnifiedTable(); return; }
 
-    var eduMap = { bachelor:'BACHELOR DEGREE', twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
+    var eduMap = { bachelor:"BACHELOR'S DEGREE", twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
     var targetEdu = eduMap[currentEducationalLevel];
 
     var categorySupabaseMap = {
@@ -918,7 +923,7 @@ function updateUnifiedTable() {
     if (currentSchool === 'all' || currentEducationalLevel === 'all') {
         coursesToShow = [];
     } else {
-        var eduMap = { bachelor:'BACHELOR DEGREE', twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
+        var eduMap = { bachelor:"BACHELOR'S DEGREE", twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
         var targetEduLabel = eduMap[currentEducationalLevel];
         var filtered = courseList.filter(function(c) {
             return c.school === currentSchool && (!targetEduLabel || c.eduLevel === targetEduLabel);
@@ -1069,7 +1074,7 @@ function refreshTableData() {
 function saveData() {
     const saveBtn = event.target;
     const originalText = saveBtn.innerHTML;
-    if (currentEducationalLevel === 'all') { showToast('Please select a specific Educational Attainment before saving.', 'error'); return; }
+    if (currentEducationalLevel === 'all') { showToast('Please select a specific Courses before saving.', 'error'); return; }
     if (currentFilter === 'enrollees' && document.getElementById('categoryFilter').value === 'enrollees') { showToast('Please choose a category before saving.', 'error'); return; }
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; saveBtn.disabled = true;
     saveAllDataToSupabase().then(function(changedItems) {
@@ -1113,10 +1118,10 @@ function saveData() {
 async function saveAllDataToSupabase() {
     const catVal = document.getElementById('categoryFilter').value;
     if (catVal === 'enrollees') throw new Error('Please choose a category before saving.');
-    if (currentEducationalLevel === 'all') throw new Error('Please select an Educational Attainment before saving.');
+    if (currentEducationalLevel === 'all') throw new Error('Please select a Courses before saving.');
     const data = schoolsData[currentSchool] && schoolsData[currentSchool][currentFilter] ? schoolsData[currentSchool][currentFilter] : {};
     const categoryMap = { enrollees:'N/A', outside:'OutsideBataan', inside:'InsideBataan', graduates:'Graduates', passers:'NumberofBoardPasser' };
-    const eduMap = { bachelor:'BACHELOR DEGREE', twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
+    const eduMap = { bachelor:"BACHELOR'S DEGREE", twoyear:'2-YEAR COURSE', tesda:'TESDA', graduate:'GRADUATE COURSE' };
     const category = categoryMap[catVal] || 'N/A';
     const educationalAttainment = eduMap[currentEducationalLevel] || 'N/A';
     const saveTasks = [];
@@ -1306,7 +1311,7 @@ function exportTableData() {
     var workbook = new ExcelJS.Workbook();
     var ws = workbook.addWorksheet('School Data');
     ws.addRow(['School: ' + schoolLabel]); ws.mergeCells(1,1,1,totalCols);
-    ws.addRow(['Educational Attainment: ' + eduLabel + '   |   Category: ' + catLabel]); ws.mergeCells(2,1,2,totalCols);
+    ws.addRow(['Courses: ' + eduLabel + '   |   Category: ' + catLabel]); ws.mergeCells(2,1,2,totalCols);
     var yearHeaderRow = ['Course']; exportYears.forEach(function(y){yearHeaderRow.push(y,'','');});
     ws.addRow(yearHeaderRow);
     var subHeaderRowData = ['']; exportYears.forEach(function(){subHeaderRowData.push('FEMALE','MALE','TOTAL');});
@@ -2547,23 +2552,57 @@ async function generateAndDownloadBackup(freq, isManual) {
     await dumpTable('ProblemReports',    '',                   'ProblemReports');
 
     lines.push('-- END OF BACKUP');
-    var sql  = lines.join('\n');
-    var blob = new Blob([sql], { type: 'application/sql' });
-    var url  = URL.createObjectURL(blob);
-    var a    = document.createElement('a');
-    a.href     = url;
-    a.download = 'utown_backup_' + freq + '_' + ts + '.sql';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    if (isManual) {
-        // For manual backups also update the auto-schedule timestamp
-        localStorage.setItem('utownLastBackup_' + freq, new Date().toISOString());
+    var sql         = lines.join('\n');
+    var sqlFilename = 'utown_backup_' + freq + '_' + ts + '.sql';
+    var zipFilename = 'utown_backup_' + freq + '_' + ts + '.zip';
+    var _storedPw = (currentUser && currentUser.password) ? currentUser.password : '';
+    var zipPassword = prompt(
+        'Enter the password for this backup ZIP file:\n' +
+        '(This will be required to open the downloaded .zip)',
+        _storedPw
+    );
+    if (zipPassword === null || zipPassword === '') {
+        showToast('Backup cancelled - no password entered.', 'error');
+        _backupRunning = false;
+        return;
     }
-    _backupRunning = false;
-    showToast('Backup saved: utown_backup_' + freq + '_' + ts + '.sql', 'success');
+
+    try {
+        var blobWriter = new zip.BlobWriter('application/zip');
+        var zipWriter  = new zip.ZipWriter(blobWriter, { password: zipPassword, zipCrypto: true });
+        await zipWriter.add(sqlFilename, new zip.TextReader(sql));
+        await zipWriter.close();
+        var zipBlob = await blobWriter.getData();
+        var url  = URL.createObjectURL(zipBlob);
+        var a    = document.createElement('a');
+        a.href     = url;
+        a.download = zipFilename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        if (isManual) {
+            localStorage.setItem('utownLastBackup_' + freq, new Date().toISOString());
+        }
+        _backupRunning = false;
+        showToast('Backup saved: ' + zipFilename + ' (password protected)', 'success');
+    } catch (zipErr) {
+        console.error('ZIP error:', zipErr);
+        var sqlBlob2 = new Blob([sql], { type: 'application/sql' });
+        var url2  = URL.createObjectURL(sqlBlob2);
+        var a2    = document.createElement('a');
+        a2.href     = url2;
+        a2.download = sqlFilename;
+        document.body.appendChild(a2);
+        a2.click();
+        document.body.removeChild(a2);
+        URL.revokeObjectURL(url2);
+        if (isManual) {
+            localStorage.setItem('utownLastBackup_' + freq, new Date().toISOString());
+        }
+        _backupRunning = false;
+        showToast('Backup saved: ' + sqlFilename + ' (saved as .sql)', 'success');
+    }
 }
 
 // =============================================

@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="school.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@zip.js/zip.js/dist/zip.min.js"></script>
     <!-- Firebase SDK removed — replaced with Supabase REST API in school.js -->
 </head>
 <body>
@@ -47,6 +48,36 @@
             to { transform: rotate(360deg); }
         }
     </style>
+
+    <!-- Logout Loading Overlay -->
+    <div id="logoutLoadingOverlay" style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.97) 0%, rgba(185, 28, 28, 0.92) 100%);
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        backdrop-filter: blur(6px);
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    ">
+        <div style="text-align: center; color: #ffffff; pointer-events: none;">
+            <div style="
+                width: 60px;
+                height: 60px;
+                border: 4px solid rgba(255, 255, 255, 0.15);
+                border-top: 4px solid rgba(255, 255, 255, 0.9);
+                border-right: 4px solid rgba(255, 255, 255, 0.55);
+                border-radius: 50%;
+                margin: 0 auto 1.5rem;
+                animation: sessionSpinning 0.75s linear infinite;
+            "></div>
+            <p style="font-size: 1.15rem; font-weight: 600; margin: 0; letter-spacing: 0.3px;">Logging Out</p>
+            <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.75rem;">Ending your session safely...</p>
+        </div>
+    </div>
+
     <!-- Navigation Header -->
     <nav class="nav-header">
         <div class="nav-container">
@@ -254,10 +285,10 @@
         </p>
     </div>
                         <div class="educational-filter-section">
-                            <h3 class="educational-filter-title"><i class="fas fa-graduation-cap"></i> Educational Attainment</h3>
+                            <h3 class="educational-filter-title"><i class="fas fa-graduation-cap"></i> Courses</h3>
                             <select class="educational-filter-dropdown" id="educationalFilter" onchange="filterByEducationalAttainment()">
                                 <option value="all">N/A</option>
-                                <option value="bachelor">BACHELOR DEGREE</option>
+                                <option value="bachelor">BACHELOR'S DEGREE</option>
                                 <option value="twoyear">2-YEAR COURSE</option>
                                 <option value="tesda">TESDA</option>
                                 <option value="graduate">GRADUATE COURSE</option>
@@ -347,8 +378,8 @@
 
                     <div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;">
                         <select id="clEduFilter" class="form-input" style="max-width:220px;" onchange="clFilterCourses()">
-                            <option value="all">All Educational Attainment</option>
-                            <option value="BACHELOR DEGREE">BACHELOR DEGREE</option>
+                            <option value="all">All Courses</option>
+                            <option value="BACHELOR'S DEGREE">BACHELOR'S DEGREE</option>
                             <option value="2-YEAR COURSE">2-YEAR COURSE</option>
                             <option value="TESDA">TESDA</option>
                             <option value="GRADUATE COURSE">GRADUATE COURSE</option>
@@ -598,10 +629,10 @@
                         <input type="hidden" id="modalCourseSchool">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Educational Attainment</label>
+                        <label class="form-label">Courses</label>
                         <select id="modalEduAttainment" class="form-input" required>
                             <option value="">-- Select --</option>
-                            <option value="BACHELOR DEGREE">BACHELOR DEGREE</option>
+                            <option value="BACHELOR'S DEGREE">BACHELOR'S DEGREE</option>
                             <option value="2-YEAR COURSE">2-YEAR COURSE</option>
                             <option value="TESDA">TESDA</option>
                             <option value="GRADUATE COURSE">GRADUATE COURSE</option>
@@ -635,10 +666,10 @@
                     <input type="text" id="editCourseName" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Educational Attainment</label>
+                    <label class="form-label">Courses</label>
                     <select id="editCourseEdu" class="form-input" required>
                         <option value="">-- Select --</option>
-                        <option value="BACHELOR DEGREE">BACHELOR DEGREE</option>
+                        <option value="BACHELOR'S DEGREE">BACHELOR'S DEGREE</option>
                         <option value="2-YEAR COURSE">2-YEAR COURSE</option>
                         <option value="TESDA">TESDA</option>
                         <option value="GRADUATE COURSE">GRADUATE COURSE</option>

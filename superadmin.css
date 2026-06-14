@@ -1029,7 +1029,7 @@
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
-        /* Educational Attainment Filter Section - NEW */
+        /* Courses Filter Section - NEW */
         .educational-filter-section {
             background: var(--light-yellow);
             border-radius: 16px;
@@ -1281,14 +1281,13 @@
         }
 
 
-        .table-wrapper {
+/*        .table-wrapper {
             max-height: 700px;
-            overflow-x: auto;
-            overflow-y: auto;
+            overflow: auto;
             position: relative;
             width: 100%;
             border-radius: 0;
-        }
+        }*/
 
         /* ENHANCED TABLE STYLES - FIXED STICKY POSITIONING */
         .unified-data-table {
@@ -1575,9 +1574,6 @@
             padding: 1rem;
             border-bottom: 1px solid var(--neutral-200);
             transition: all 0.3s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .data-table tr:hover {
@@ -2920,6 +2916,8 @@
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
+
+        .action-cell .btn {
             display:inline-flex; 
             align-items:center; 
             justify-content:center; 
@@ -3042,10 +3040,10 @@
 .al-role-user,.al-role-default { background:#e0e7ff; color:#3730a3; }
 .al-role-teacher { background:#d1fae5; color:#065f46; }
 .al-role-student { background:#fce7f3; color:#9d174d; }
-.al-td-desc { max-width:380px; overflow:visible; }
-.al-desc-text { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; color:#374151; font-size:.875rem; line-height:1.55; word-break:break-word; }
-.al-desc-text.al-expanded { display:block !important; -webkit-line-clamp:unset !important; overflow:visible !important; max-height:none !important; white-space:normal !important; word-break:break-word !important; }
-.al-desc-toggle { background:none; border:none; color:#3b82f6; font-size:.75rem; cursor:pointer; padding:0; margin-top:.25rem; font-weight:600; display:block; }
+.al-td-desc { max-width:380px; }
+.al-desc-text { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; color:#374151; font-size:.875rem; line-height:1.55; }
+.al-desc-text.al-expanded { display:block; -webkit-line-clamp:unset; }
+.al-desc-toggle { background:none; border:none; color:#3b82f6; font-size:.75rem; cursor:pointer; padding:0; margin-top:.15rem; font-weight:600; display:inline; }
 .al-desc-toggle:hover { color:#1e40af; text-decoration:underline; }
 .al-location-chip { display:inline-flex; align-items:center; gap:.3rem; padding:.2rem .6rem; background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; border-radius:6px; font-size:.78rem; font-weight:600; font-family:monospace; white-space:nowrap; }
 .al-pagination { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem; padding-top:.5rem; }
@@ -3068,6 +3066,153 @@
     .al-pagination { flex-direction:column; align-items:center; }
     .al-th-num,.al-td-num,.al-th-loc,.al-td-loc { display:none; }
 }
+/* ===================================================================
+   SCHOOL PORTAL - NEW STYLES
+   =================================================================== */
+
+/* ── Sidebar school label ── */
+.sidebar-school-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary-blue);
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 0.5rem 0.85rem;
+    margin: -1rem 0 1.25rem 0;
+    border-left: 3px solid var(--accent-blue);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── School Profile Header ── */
+.school-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+}
+
+.school-profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #fff;
+    border: 3px solid rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.school-profile-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.school-profile-meta h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.school-abbrev-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 999px;
+    padding: 0.25rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #fff;
+    backdrop-filter: blur(6px);
+    width: fit-content;
+}
+
+@media (max-width: 600px) {
+    .school-profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+}
+
+/* ── Settings Blocks ── */
+.settings-block {
+    background: var(--light-blue);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid var(--neutral-200);
+}
+
+.settings-block-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.settings-block .form-textarea {
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* ── Activity Log role — school ── */
+.al-role-school {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    color: #fff;
+}
+
+/* ── contact hours list ── */
+.contact-hours-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    line-height: 1.8;
+}
+.contact-hours-list .closed {
+    color: var(--danger-red);
+    font-weight: 500;
+}
+
+/* ── table wrapper scrollable ── */
+.table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* ── form-input disabled look ── */
+.form-input:disabled,
+.form-input[disabled],
+.form-textarea:disabled,
+.form-textarea[disabled] {
+    background: var(--neutral-100) !important;
+    color: var(--text-gray);
+    cursor: not-allowed;
+    border-color: var(--neutral-200) !important;
+}
+
 
 /* Summary card loading state */
 .summary-card.stat-loading h3 {
@@ -3094,525 +3239,143 @@
 .summary-card:not(.stat-loading) {
     transition: opacity 0.3s;
 }
-/* Admin Table Styles */
-#adminAccountsTableBody tr {
-    transition: all 0.3s ease;
-}
 
-#adminAccountsTableBody tr:nth-child(even) {
-    background: var(--neutral-100);
-}
-
-#adminAccountsTableBody tr:hover {
-    background: var(--light-blue);
-    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.1);
-}
-
-#adminAccountsTableBody td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--neutral-200);
-    text-align: left;
-}
-
-#adminAccountsTableBody td:first-child {
-    text-align: center;
-    width: 40px;
-    font-weight: 600;
-    color: var(--text-gray);
-}
-
-#adminAccountsTableBody td:nth-child(2) {
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-#adminAccountsTableBody .password-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    justify-content: center;
-}
-
-#adminAccountsTableBody .password-display {
-    font-family: 'Courier New', monospace;
-    background: var(--neutral-100);
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    border: 1px solid var(--neutral-200);
-    min-width: 80px;
-    text-align: center;
-}
-
-#adminAccountsTableBody .password-eye-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-gray);
-    font-size: 0.9rem;
-    padding: 4px 6px;
-    border-radius: 4px;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    line-height: 1;
-}
-
-#adminAccountsTableBody .password-eye-btn:hover {
-    color: var(--primary-blue);
-    background: var(--light-blue);
-}
-
-#adminAccountsTableBody .action-cell {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: nowrap;
-}
-/* ─────────────────────────────────────────────────────────────────────────────
-   ENHANCED EDIT ADMIN MODAL - MATCHING EDIT SCHOOL DESIGN
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   REDESIGNED EDIT ADMIN ACCOUNT MODAL - clean, modern card layout
-   ───────────────────────────────────────────────────────────────────────────── */
-
-#editAdminModal {
+#dashboardLoadingOverlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.78);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 9999;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 99998;
     align-items: center;
     justify-content: center;
-    animation: fadeIn 0.25s ease-out;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
-#editAdminModal.show { display: flex !important; }
-
-#editAdminModal .modal-overlay {
-    position: absolute;
-    inset: 0;
-    cursor: pointer;
-    z-index: 0;
-}
-
-/* Card container */
-#editAdminModal .modal-inner {
-    position: relative;
-    background: #ffffff;
+#dashboardLoadingOverlay .dl-box {
+    background: #fff;
     border-radius: 20px;
-    width: 95%;
-    max-width: 760px;
-    max-height: 92vh;
-    overflow: hidden;
+    padding: 2.5rem 3rem;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.45),
-                0 0 0 1px rgba(255, 255, 255, 0.06);
-    z-index: 1;
-    animation: slideInScale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Compact header — split layout with icon on the left */
-#editAdminModal .modal-header-enhanced {
-    background: #ffffff;
-    color: var(--text-dark);
-    padding: 1.5rem 1.75rem;
-    text-align: left;
-    position: relative;
-    border-bottom: 1px solid #eef1f6;
-    display: grid;
-    grid-template-columns: 64px 1fr auto;
-    grid-template-rows: auto auto;
-    column-gap: 1rem;
     align-items: center;
+    gap: 1.1rem;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    min-width: 260px;
 }
 
-/* remove the heavy radial shimmer */
-#editAdminModal .modal-header-enhanced::before { content: none; }
-
-#editAdminModal .modal-header-enhanced::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    background: linear-gradient(180deg, #1e40af 0%, #3b82f6 100%);
-}
-
-#editAdminModal .modal-close {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-    align-self: start;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    color: #475569;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    backdrop-filter: none;
-    position: static;
-    top: auto;
-    right: auto;
-}
-
-#editAdminModal .modal-close:hover {
-    background: #e2e8f0;
-    color: #0f172a;
-    transform: none;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
-}
-
-/* Square rounded icon, no rotating ring */
-#editAdminModal .admin-icon-enhanced {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-    color: #ffffff;
-    border-radius: 14px;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    border: none;
-    backdrop-filter: none;
-    position: relative;
-    overflow: visible;
-    box-shadow: 0 6px 16px rgba(30, 64, 175, 0.35);
-}
-
-#editAdminModal .admin-icon-enhanced::after { content: none; }
-
-#editAdminModal .modal-title {
-    grid-column: 2;
-    grid-row: 1;
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin: 0;
-    color: #0f172a;
-    letter-spacing: -0.01em;
-    text-shadow: none;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    z-index: 5;
-}
-
-#editAdminModal .modal-title i { color: #3b82f6; }
-
-#editAdminModal .modal-subtitle-enhanced {
-    grid-column: 2;
-    grid-row: 2;
-    font-size: 0.875rem;
-    opacity: 1;
-    color: #64748b;
-    font-weight: 400;
-    margin: 2px 0 0 0;
-    z-index: 5;
-}
-
-/* Body */
-#editAdminModal .form-container-enhanced {
-    padding: 1.75rem;
-    background: #f8fafc;
-    overflow-y: auto;
-    flex: 1 1 auto;
-}
-
-#editAdminModal .form-container-enhanced::before { content: none; }
-
-#editAdminModal .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
-}
-
-#editAdminModal .form-group-enhanced {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-#editAdminModal .form-label {
-    font-weight: 600;
-    color: #334155;
-    font-size: 0.78rem;
-    margin-bottom: 0.45rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-#editAdminModal .form-label::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: #3b82f6;
+#dashboardLoadingOverlay .dl-spinner {
+    width: 52px;
+    height: 52px;
+    border: 5px solid #dbeafe;
+    border-top-color: #1e40af;
     border-radius: 50%;
-    flex-shrink: 0;
+    animation: dlSpin 0.8s linear infinite;
 }
 
-#editAdminModal .form-input {
-    padding: 0.75rem 0.9rem;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    background: #ffffff;
-    width: 100%;
-    color: #0f172a;
-    box-shadow: none;
+@keyframes dlSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
 
-#editAdminModal .form-input::placeholder { color: #94a3b8; }
-
-#editAdminModal .form-input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-    transform: none;
-}
-
-#editAdminModal .form-input:hover { border-color: #cbd5e1; }
-
-/* Footer with action buttons */
-#editAdminModal .form-actions-enhanced {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 1rem 0 0 0;
-    margin: 0;
-    border-top: 1px solid #e2e8f0;
-}
-
-#editAdminModal .btn-cancel-enhanced {
-    padding: 0.75rem 1.5rem;
-    background: #ffffff;
-    color: #475569;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
+#dashboardLoadingOverlay .dl-text {
+    font-size: 1rem;
     font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    color: #1e40af;
+    text-align: center;
+    letter-spacing: 0.01em;
 }
 
-#editAdminModal .btn-cancel-enhanced:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
-    color: #0f172a;
-    transform: none;
-    box-shadow: none;
+#dashboardLoadingOverlay .dl-sub {
+    font-size: 0.83rem;
+    color: #64748b;
+    margin-top: -0.5rem;
+    text-align: center;
+}
+/* FIX #4 - AL-ROLE school badge */
+.al-role-school {
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    color: #fff;
 }
 
-#editAdminModal .btn-save-enhanced {
-    padding: 0.75rem 1.75rem;
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-    color: #ffffff;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.30);
-    position: relative;
-    overflow: hidden;
-    min-width: 150px;
-    justify-content: center;
+/* FIX #5 - Course row highlight on update */
+@keyframes rowHighlight {
+    from { background-color: #eff6ff; }
+    to   { background-color: transparent; }
+}
+.course-row.highlight {
+    animation: rowHighlight 1s ease-out;
 }
 
-#editAdminModal .btn-save-enhanced::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
-}
 
-#editAdminModal .btn-save-enhanced:hover::before { transform: translateX(100%); }
-
-#editAdminModal .btn-save-enhanced:hover {
-    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(30, 64, 175, 0.40);
-}
-
-#editAdminModal .btn-save-enhanced:active { transform: translateY(0); }
-
-#editAdminModal .btn-save-enhanced:disabled,
-#editAdminModal .btn-save-enhanced.loading {
-    pointer-events: none;
-    opacity: 0.95;
-    cursor: not-allowed;
-}
-
-/* spinner is now provided inline by JS (fa-spinner fa-spin), so no ::after spinner */
-#editAdminModal .btn-save-enhanced.loading::after { content: none; }
-
-/* Scrollbar */
-#editAdminModal .form-container-enhanced::-webkit-scrollbar { width: 8px; }
-#editAdminModal .form-container-enhanced::-webkit-scrollbar-track { background: transparent; }
-#editAdminModal .form-container-enhanced::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 8px;
-}
-#editAdminModal .form-container-enhanced::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-/* Responsive */
-@media (max-width: 768px) {
-    #editAdminModal .modal-inner {
-        width: 96%;
-        border-radius: 16px;
-        max-height: 95vh;
-    }
-    #editAdminModal .modal-header-enhanced {
-        padding: 1.25rem 1.25rem 1.25rem 1.5rem;
-        grid-template-columns: 48px 1fr auto;
-    }
-    #editAdminModal .admin-icon-enhanced {
-        width: 48px; height: 48px; font-size: 1.25rem;
-    }
-    #editAdminModal .modal-title { font-size: 1.1rem; }
-    #editAdminModal .modal-subtitle-enhanced { font-size: 0.8rem; }
-    #editAdminModal .form-container-enhanced { padding: 1.25rem; }
-    #editAdminModal .form-grid { grid-template-columns: 1fr; gap: 0.85rem; }
-    #editAdminModal .form-actions-enhanced { flex-direction: column-reverse; gap: 0.5rem; }
-    #editAdminModal .btn-cancel-enhanced,
-    #editAdminModal .btn-save-enhanced {
-        width: 100%; justify-content: center; padding: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
-    #editAdminModal .modal-title { font-size: 1rem; }
-    #editAdminModal .admin-icon-enhanced { width: 44px; height: 44px; font-size: 1.1rem; }
-    #editAdminModal .form-container-enhanced { padding: 1rem; }
-}
-/* ── Session Loading Overlay Animations ── */
-@keyframes sessionSpinning {
-    from { 
-        transform: rotate(0deg); 
-    }
-    to { 
-        transform: rotate(360deg); 
-    }
-}
-
-#sessionLoadingOverlay {
-    animation: sessionFadeIn 0.3s ease-out;
-}
-
-@keyframes sessionFadeIn {
-    from {
-        opacity: 0;
-        backdrop-filter: blur(0px);
-    }
-    to {
-        opacity: 1;
-        backdrop-filter: blur(6px);
-    }
-}
-
-/* Loading overlay text glow effect */
-#sessionLoadingOverlay p {
-    text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-    animation: textPulse 2s ease-in-out infinite;
-}
-
-@keyframes textPulse {
-    0%, 100% {
-        opacity: 0.9;
-        text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-    }
-    50% {
-        opacity: 1;
-        text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
-    }
-}
-
-/* ── Settings Tabs ──────────────────────────────────────────────────────────── */
+/* ── Settings Tabs ─────────────────────────────────────────────── */
 .settings-tabs {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    gap: 0;
+    margin-bottom: 1.75rem;
     border-bottom: 2px solid var(--neutral-200);
-    padding-bottom: 0;
     flex-wrap: wrap;
 }
+
 .settings-tab-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
+    padding: 0.85rem 1.6rem;
     border: none;
-    background: none;
+    border-radius: 10px 10px 0 0;
+    background: transparent;
     color: var(--text-gray);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     cursor: pointer;
-    border-bottom: 3px solid transparent;
+    transition: all 0.22s ease;
     margin-bottom: -2px;
-    border-radius: 8px 8px 0 0;
-    transition: all 0.2s ease;
-    font-family: inherit;
+    border-bottom: 3px solid transparent;
+    position: relative;
 }
+
+.settings-tab-btn i {
+    font-size: 0.95rem;
+}
+
 .settings-tab-btn:hover {
-    background: var(--light-blue);
     color: var(--primary-blue);
+    background: var(--light-blue);
 }
+
 .settings-tab-btn.active {
     color: var(--primary-blue);
-    border-bottom-color: var(--primary-blue);
-    background: var(--light-blue);
+    background: var(--white);
+    border-bottom: 3px solid var(--primary-blue);
+    font-weight: 700;
 }
+
 .settings-tab-content {
     display: none;
-    animation: stFadeIn 0.2s ease;
 }
+
 .settings-tab-content.active {
     display: block;
+    animation: fadeInUp 0.28s ease;
 }
-@keyframes stFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
+
+/* Settings tab header row (title + refresh btn) */
 .settings-tab-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1.25rem;
-    padding-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--neutral-200);
 }
+
 .settings-tab-header h3 {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--text-dark);
     display: flex;
@@ -3620,14 +3383,65 @@
     gap: 0.5rem;
     margin: 0;
 }
-.settings-tab-header h3 i { color: var(--primary-blue); }
 
-/* ── Backup frequency helper text ───────────────────────────────────────────── */
+.settings-tab-header h3 i {
+    color: var(--primary-blue);
+}
+
+/* System Settings tab form layout */
+#settingsTab_system-settings .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.75rem;
+    background: var(--light-blue);
+    border-radius: 16px;
+    border: 1px solid var(--neutral-200);
+}
+
+#settingsTab_system-settings .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Form help text (used under backup frequency select) */
 .form-help-text {
-    display: block;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--text-gray);
-    margin-top: 0.4rem;
+    margin-top: 0.45rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
     line-height: 1.55;
 }
-.form-help-text i { color: var(--accent-blue); margin-right: 2px; }
+
+.form-help-text i {
+    margin-top: 2px;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .settings-tab-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.82rem;
+    }
+
+    #settingsTab_system-settings .form-grid {
+        grid-template-columns: 1fr;
+        padding: 1.25rem;
+    }
+
+    #settingsTab_system-settings .form-actions {
+        flex-direction: column;
+    }
+
+    #settingsTab_system-settings .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
